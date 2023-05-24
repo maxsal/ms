@@ -2,7 +2,7 @@
 % Please edit documentation in R/zzz.R
 \name{.onAttach}
 \alias{.onAttach}
-\title{Print data.table as tibbles for viewing}
+\title{Print data.table with nice features}
 \usage{
 .onAttach(libname, pkgname)
 }
@@ -12,8 +12,8 @@
 \item{pkgname}{Currently unused}
 }
 \value{
-Rewrites print.data.table in background
+Sets print.data.table options
 }
 \description{
-Print data.table as tibbles for viewing
+Print data.table with nice features
 }

@@ -1,13 +1,16 @@
-#' Print data.table as tibbles for viewing
+#' Print data.table with nice features
 #'
 #' @param libname Currently unused
 #' @param pkgname Currently unused
 #'
-#' @return Rewrites print.data.table in background
+#' @return Sets print.data.table options
 #' @export
 #'
 
 .onAttach <- function(libname, pkgname) {
-  print_as_tibble <- function(dt) print(tibble::as_tibble(dt))
-  utils::assignInNamespace("print.data.table", print_as_tibble , ns="data.table")
+  options(
+    datatable.print.topn       = 5,
+    datatable.print.class      = TRUE,
+    datatable.print.trunc.cols = TRUE
+    )
 }
