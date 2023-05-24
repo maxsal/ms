@@ -12,6 +12,7 @@ LazyData: true
 Imports: 
     cli,
     ggplot2,
+    remotes,
     scales,
     showtext,
     sysfonts
