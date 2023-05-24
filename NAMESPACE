@@ -2,6 +2,7 @@
 
 export(.onAttach)
 export(libri)
+export(pbfor)
 export(scale_color_ms)
 export(scale_fill_ms)
 export(theme_ms)
