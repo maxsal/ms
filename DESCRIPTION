@@ -2,10 +2,9 @@ Package: ms
 Type: Package
 Title: What the Package Does (Title Case)
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Author: Maxwell Salvatore
+Maintainer: Maxwell Salvatore <mmsalva@umich.edu>
+Description: Compilation of useful functions across projects.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -15,5 +14,6 @@ Imports:
     remotes,
     scales,
     showtext,
-    sysfonts
+    sysfonts,
+    tibble
 RoxygenNote: 7.2.3
