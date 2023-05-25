@@ -36,7 +36,6 @@ theme_ms <- function(
 
           axis.text = ggplot2::element_text(color = "#1b1b1b"),
 
-          plot.title.position = "plot",
           plot.title = ggplot2::element_text(face = "bold",
                                     margin = ggplot2::margin(b = 8),
                                     color = "#1b1b1b"),
