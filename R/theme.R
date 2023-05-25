@@ -30,27 +30,21 @@ theme_ms <- function(
 
           axis.ticks = ggplot2::element_blank(),
 
-          axis.title = ggplot2::element_text(size = 12,
-                                    color = "grey20"),
+          axis.title   = ggplot2::element_text(color = "#1b1b1b"),
           axis.title.x = ggplot2::element_text(margin = ggplot2::margin(t = 10)),
           axis.title.y = ggplot2::element_text(margin = ggplot2::margin(r = 10)),
 
-          axis.text = ggplot2::element_text(size = 12,
-                                   color = "grey20"),
+          axis.text = ggplot2::element_text(color = "#1b1b1b"),
 
           plot.title.position = "plot",
-          plot.title = ggplot2::element_text(size = 20,
-                                    face = "bold",
+          plot.title = ggplot2::element_text(face = "bold",
                                     margin = ggplot2::margin(b = 8),
                                     color = "#1b1b1b"),
-          plot.subtitle = ggplot2::element_text(size = 14,
-                                       color = "grey20"),
-          plot.caption = ggplot2::element_text(size = 1,
-                                      hjust = 0),
+          plot.subtitle = ggplot2::element_text(color = "#1b1b1b"),
+          plot.caption  = ggplot2::element_text(hjust = 0),
 
           text = ggplot2::element_text(family = font_family),
 
-          legend.text = ggplot2::element_text(size = 12),
           legend.position = "top")
 
   if (show_grid_lines == FALSE) {
