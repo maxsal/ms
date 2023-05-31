@@ -8,7 +8,7 @@ theme_ms(
   show_grid_lines = TRUE,
   show_axis_titles = TRUE,
   show_legend_title = TRUE,
-  font_family = "Public Sans"
+  font_family = NULL
 )
 }
 \arguments{

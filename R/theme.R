@@ -13,14 +13,16 @@ theme_ms <- function(
     show_grid_lines   = TRUE,
     show_axis_titles  = TRUE,
     show_legend_title = TRUE,
-    font_family       = "Public Sans"
+    font_family       = NULL
     ) {
 
-  showtext::showtext_auto()
+  if (!is.null(font_family)) {
+    showtext::showtext_auto()
 
-  if (!(font_family %in% sysfonts::font_families())) {
-    cli::cli_alert_info(paste0("installing ", font_family, "..."))
-    sysfonts::font_add_google(font_family)
+    if (!(font_family %in% sysfonts::font_families())) {
+      cli::cli_alert_info(paste0("installing ", font_family, "..."))
+      sysfonts::font_add_google(font_family)
+    }
   }
 
   custom_theme <- ggplot2::theme_classic() +
@@ -42,9 +44,12 @@ theme_ms <- function(
           plot.subtitle = ggplot2::element_text(color = "#1b1b1b"),
           plot.caption  = ggplot2::element_text(hjust = 0),
 
-          text = ggplot2::element_text(family = font_family),
-
           legend.position = "top")
+
+  if (!is.null(font_family)) {
+    custom_theme <- custom_theme +
+      ggplot2::theme(text = ggplot2::element_text(family = font_family))
+  }
 
   if (show_grid_lines == FALSE) {
 
