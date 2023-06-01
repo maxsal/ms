@@ -1,0 +1,25 @@
+#' PheWAS catalog information
+#'
+#' A table listing PheWAS Codes (or phecodes) and their corresponding
+#' description, category, exclusion range, and other information.
+#' Last manually curated on June 1, 2023.
+#'
+#' @format ## `pheinfo`
+#' A data frame with 1,866 rows and 12 columns:
+#' \describe{
+#'   \item{phecode}{PheWAS Code (aka phecode)}
+#'   \item{description}{Phecode description}
+#'   \item{group}{Phecode disease category or group}
+#'   \item{order}{A variable ordering by `groupnum` and then numeric `phecode` value, useful for plotting}
+#'   \item{color}{Phecode group color inspired by Okabe-Ito colorblind-friendly palette}
+#'   \item{sex}{Defines `male` or `female` specific phecodes, otherwise `both`}
+#'   \item{rollup}{Indicator for whether `phecode` rolls up}
+#'   \item{leaf}{Indicator for whether `phecode` is a leaf (a subcode of a parent code)}
+#'   \item{groupnum}{A numeric value corresponding to `phecode` `group`}
+#'   \item{color_original}{Original `phecode` `group` color scheme}
+#'   \item{phecode_exclude_range}{Range of phecodes that disqualify as controls for a given `phecode`}
+#'   \item{phecode_exclude_phenotypes}{Description of `phecode_exclude_range` codes}
+#'   ...
+#' }
+#' @source Curated version of PheWAS::pheinfo
+"pheinfo"
