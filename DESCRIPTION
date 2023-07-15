@@ -14,7 +14,11 @@ Imports:
     remotes,
     scales,
     showtext,
-    sysfonts
+    sysfonts,
+    collapse,
+    data.table,
+    doMC,
+    foreach
 RoxygenNote: 7.2.3
 Depends: 
     R (>= 2.10)
