@@ -31,7 +31,6 @@
 .pcor_helper <- function(x, covs, covs1 = NULL, ncores) {
   doMC::registerDoMC(cores = ncores)
   columns <- colnames(x)
-  if (!is.matrix(x)) x <- as.matrix(x)
   cols    <- 1:ncol(x)
   output <- foreach::foreach(i = cols) %dopar% {
     out <- list()
@@ -91,7 +90,6 @@
 .pwcor_helper <- function(x, covs, covs1 = NULL, w = NULL, ncores) {
   doMC::registerDoMC(cores = ncores)
   columns <- colnames(x)
-  if (!is.matrix(x)) x <- as.matrix(x)
   cols    <- 1:ncol(x)
   output <- foreach::foreach(i = cols) %dopar% {
     out <- list()
