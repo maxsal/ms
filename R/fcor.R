@@ -17,6 +17,7 @@
 #' Helper: perform rapid (parallel) partial correlation calculations on a matrix
 #' @param x matrix of variables over which to calculate pairwise correlations
 #' @param covs matrix of variables that serve as covariates
+#' @param covs1 alternate matrix of variables that serve as covariates when pairwise correlation is not complete
 #' @param ncores number of cores over which to parallelize
 #' @importFrom stats cor
 #' @importFrom doMC registerDoMC
@@ -27,7 +28,7 @@
 #' @importFrom collapse flm
 #' @return data.table with unweighted pairwise partial correlations
 
-.pcor_helper <- function(x, covs, ncores) {
+.pcor_helper <- function(x, covs, covs1 = NULL, ncores) {
   doMC::registerDoMC(cores = ncores)
   columns <- colnames(x)
   if (!is.matrix(x)) x <- as.matrix(x)
@@ -36,15 +37,36 @@
     out <- list()
     for (j in cols) {
       if (j >= i) next
+      cca <- stats::complete.cases(x[, .SD, .SDcols = c(columns[c(i, j)])])
       tmp <- stats::cor(
         collapse::flm(y = as.matrix(x[, i]), X = as.matrix(covs), return.raw = TRUE)$residuals,
         collapse::flm(y = as.matrix(x[, j]), X = as.matrix(covs), return.raw = TRUE)$residuals
       )
-      out[[j]] <- data.table::data.table(
-        "var1" = columns[i],
-        "var2" = columns[j],
-        "cor"  = tmp[1]
-      )
+
+      if (sum(cca) == nrow(x)) {
+        tmp <- stats::cor(
+          collapse::flm(y = as.matrix(x[, i]), X = as.matrix(covs), return.raw = TRUE)$residuals,
+          collapse::flm(y = as.matrix(x[, j]), X = as.matrix(covs), return.raw = TRUE)$residuals
+        )
+      } else if (sum(cca) < nrow(x) && sum(cca != 0)) {
+        tmp <- stats::cor(
+          collapse::flm(y = as.matrix(x[cca, i]), X = as.matrix(covs1[cca, ]), return.raw = TRUE)$residuals,
+          collapse::flm(y = as.matrix(x[cca, j]), X = as.matrix(covs1[cca, ]), return.raw = TRUE)$residuals
+        )
+      }
+
+      if (exists("cor_out")) {
+        out[[j]] <- data.table::data.table(
+          "var1" = columns[i],
+          "var2" = columns[j],
+          "cor"  = tmp
+        )
+      } else {
+        out[[j]] <- data.table::data.table(
+          "var1" = columns[i],
+          "var2" = columns[j]
+        )
+      }
     }
     data.table::rbindlist(out, use.names = TRUE, fill = TRUE)
   }
@@ -54,6 +76,7 @@
 #' Helper: perform rapid (parallel) weighted partial correlation calculations on a matrix
 #' @param x matrix of variables over which to calculate pairwise correlations
 #' @param covs matrix of variables that serve as covariates
+#' @param covs1 alternate matrix of variables that serve as covariates when pairwise correlation is not complete
 #' @param ncores number of cores over which to parallelize
 #' @param w vector of weights
 #' @importFrom stats cor
@@ -65,7 +88,7 @@
 #' @importFrom collapse flm
 #' @return data.table with weighted pairwise partial correlations
 
-.pwcor_helper <- function(x, covs, w = NULL, ncores) {
+.pwcor_helper <- function(x, covs, covs1 = NULL, w = NULL, ncores) {
   doMC::registerDoMC(cores = ncores)
   columns <- colnames(x)
   if (!is.matrix(x)) x <- as.matrix(x)
@@ -74,15 +97,36 @@
     out <- list()
     for (j in cols) {
       if (j >= i) next
+      cca <- stats::complete.cases(x[, .SD, .SDcols = c(columns[c(i, j)])])
       tmp <- stats::cor(
         collapse::flm(y = as.matrix(x[, i]), X = as.matrix(covs), w = w, return.raw = TRUE)$residuals,
         collapse::flm(y = as.matrix(x[, j]), X = as.matrix(covs), w = w, return.raw = TRUE)$residuals
       )
-      out[[j]] <- data.table::data.table(
-        "var1" = columns[i],
-        "var2" = columns[j],
-        "cor"  = tmp
-      )
+
+      if (sum(cca) == nrow(x)) {
+        tmp <- stats::cor(
+          collapse::flm(y = as.matrix(x[, i]), X = as.matrix(covs), w = w, return.raw = TRUE)$residuals,
+          collapse::flm(y = as.matrix(x[, j]), X = as.matrix(covs), w = w, return.raw = TRUE)$residuals
+        )
+      } else if (sum(cca) < nrow(x) && sum(cca != 0)) {
+        tmp <- stats::cor(
+          collapse::flm(y = as.matrix(x[cca, i]), X = as.matrix(covs1[cca, ]), w = w[cca], return.raw = TRUE)$residuals,
+          collapse::flm(y = as.matrix(x[cca, j]), X = as.matrix(covs1[cca, ]), w = w[cca], return.raw = TRUE)$residuals
+        )
+      }
+
+      if (exists("cor_out")) {
+        out[[j]] <- data.table::data.table(
+          "var1" = columns[i],
+          "var2" = columns[j],
+          "cor"  = tmp
+        )
+      } else {
+        out[[j]] <- data.table::data.table(
+          "var1" = columns[i],
+          "var2" = columns[j]
+        )
+      }
     }
     data.table::rbindlist(out, use.names = TRUE, fill = TRUE)
   }
@@ -99,6 +143,7 @@
 #' Perform rapid (parallel) unweighted and weighted (partial) correlations on a matrix
 #' @param x matrix of variables over which to calculate pairwise correlations
 #' @param covs matrix of variables that serve as covariates
+#' @param covs1 alternate matrix of variables that serve as covariates when pairwise correlation is not complete
 #' @param w vector of weights
 #' @param n_cores number of cores over which to parallelize
 #' @param verbose logical; report what correlations are being calculate
@@ -116,7 +161,7 @@
 #' fcor(x = data, covs = covs, w = wgt, n_cores = 1)
 #' }
 
-fcor <- function(x, covs = NULL, w = NULL, n_cores = 1, verbose = FALSE) {
+fcor <- function(x, covs = NULL, covs1 = NULL, w = NULL, n_cores = 1, verbose = FALSE) {
   if (is.null(covs) & is.null(w)){
     if (verbose) cli::cli_alert("unweighted correlation")
     tmp <- .wcor_helper(x = x, w = NULL)
@@ -127,12 +172,20 @@ fcor <- function(x, covs = NULL, w = NULL, n_cores = 1, verbose = FALSE) {
   }
   if (!is.null(covs) & is.null(w)){
     if (verbose) cli::cli_alert("unweighted partial correlation")
-    tmp <- .pcor_helper(x = x, covs = covs, ncores = n_cores)
+    if (is.null(covs1)) {
+        tmp <- .pcor_helper(x = x, covs = covs, ncores = n_cores)
+    } else {
+        tmp <- .pcor_helper(x = x, covs = covs, covs1 = covs1, ncores = n_cores)
+    }
     if (!data.table::is.data.table(tmp)) tmp <- data.table::rbindlist(tmp)
   }
   if (!is.null(covs) & !is.null(w)){
     if (verbose) cli::cli_alert("weighted partial correlation")
-    tmp <- .pwcor_helper(x = x, covs = covs, w = w, ncores = n_cores)
+    if (is.null(covs1)) {
+        tmp <- .pwcor_helper(x = x, covs = covs, w = w, ncores = n_cores)
+    } else {
+        tmp <- .pwcor_helper(x = x, covs = covs, covs1 = covs1, w = w, ncores = n_cores)
+    }
     if (!data.table::is.data.table(tmp)) tmp <- data.table::rbindlist(tmp)
   }
   return(tmp)

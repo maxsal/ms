@@ -4,12 +4,14 @@
 \alias{.pwcor_helper}
 \title{Helper: perform rapid (parallel) weighted partial correlation calculations on a matrix}
 \usage{
-.pwcor_helper(x, covs, w = NULL, ncores)
+.pwcor_helper(x, covs, covs1 = NULL, w = NULL, ncores)
 }
 \arguments{
 \item{x}{matrix of variables over which to calculate pairwise correlations}
 
 \item{covs}{matrix of variables that serve as covariates}
+
+\item{covs1}{alternate matrix of variables that serve as covariates when pairwise correlation is not complete}
 
 \item{w}{vector of weights}
 
