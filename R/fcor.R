@@ -38,19 +38,19 @@
       if (j >= i) next
       cca <- stats::complete.cases(x[, .SD, .SDcols = c(columns[c(i, j)])])
       tmp <- stats::cor(
-        collapse::flm(y = as.matrix(x[, i]), X = as.matrix(covs), return.raw = TRUE)$residuals,
-        collapse::flm(y = as.matrix(x[, j]), X = as.matrix(covs), return.raw = TRUE)$residuals
+        collapse::flm(y = as.matrix(x[, ..i]), X = as.matrix(covs), return.raw = TRUE)$residuals,
+        collapse::flm(y = as.matrix(x[, ..j]), X = as.matrix(covs), return.raw = TRUE)$residuals
       )
 
       if (sum(cca) == nrow(x)) {
         tmp <- stats::cor(
-          collapse::flm(y = as.matrix(x[, i]), X = as.matrix(covs), return.raw = TRUE)$residuals,
-          collapse::flm(y = as.matrix(x[, j]), X = as.matrix(covs), return.raw = TRUE)$residuals
+          collapse::flm(y = as.matrix(x[, ..i]), X = as.matrix(covs), return.raw = TRUE)$residuals,
+          collapse::flm(y = as.matrix(x[, ..j]), X = as.matrix(covs), return.raw = TRUE)$residuals
         )
       } else if (sum(cca) < nrow(x) && sum(cca != 0)) {
         tmp <- stats::cor(
-          collapse::flm(y = as.matrix(x[cca, i]), X = as.matrix(covs1[cca, ]), return.raw = TRUE)$residuals,
-          collapse::flm(y = as.matrix(x[cca, j]), X = as.matrix(covs1[cca, ]), return.raw = TRUE)$residuals
+          collapse::flm(y = as.matrix(x[cca, ..i]), X = as.matrix(covs1[cca, ]), return.raw = TRUE)$residuals,
+          collapse::flm(y = as.matrix(x[cca, ..j]), X = as.matrix(covs1[cca, ]), return.raw = TRUE)$residuals
         )
       }
 
@@ -97,19 +97,19 @@
       if (j >= i) next
       cca <- stats::complete.cases(x[, .SD, .SDcols = c(columns[c(i, j)])])
       tmp <- stats::cor(
-        collapse::flm(y = as.matrix(x[, i]), X = as.matrix(covs), w = w, return.raw = TRUE)$residuals,
-        collapse::flm(y = as.matrix(x[, j]), X = as.matrix(covs), w = w, return.raw = TRUE)$residuals
+        collapse::flm(y = as.matrix(x[, ..i]), X = as.matrix(covs), w = w, return.raw = TRUE)$residuals,
+        collapse::flm(y = as.matrix(x[, ..j]), X = as.matrix(covs), w = w, return.raw = TRUE)$residuals
       )
 
       if (sum(cca) == nrow(x)) {
         tmp <- stats::cor(
-          collapse::flm(y = as.matrix(x[, i]), X = as.matrix(covs), w = w, return.raw = TRUE)$residuals,
-          collapse::flm(y = as.matrix(x[, j]), X = as.matrix(covs), w = w, return.raw = TRUE)$residuals
+          collapse::flm(y = as.matrix(x[, ..i]), X = as.matrix(covs), w = w, return.raw = TRUE)$residuals,
+          collapse::flm(y = as.matrix(x[, ..j]), X = as.matrix(covs), w = w, return.raw = TRUE)$residuals
         )
       } else if (sum(cca) < nrow(x) && sum(cca != 0)) {
         tmp <- stats::cor(
-          collapse::flm(y = as.matrix(x[cca, i]), X = as.matrix(covs1[cca, ]), w = w[cca], return.raw = TRUE)$residuals,
-          collapse::flm(y = as.matrix(x[cca, j]), X = as.matrix(covs1[cca, ]), w = w[cca], return.raw = TRUE)$residuals
+          collapse::flm(y = as.matrix(x[cca, ..i]), X = as.matrix(covs1[cca, ]), w = w[cca], return.raw = TRUE)$residuals,
+          collapse::flm(y = as.matrix(x[cca, ..j]), X = as.matrix(covs1[cca, ]), w = w[cca], return.raw = TRUE)$residuals
         )
       }
 
