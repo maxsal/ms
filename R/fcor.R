@@ -37,11 +37,6 @@
     for (j in cols) {
       if (j >= i) next
       cca <- stats::complete.cases(x[, .SD, .SDcols = c(columns[c(i, j)])])
-      tmp <- stats::cor(
-        collapse::flm(y = as.matrix(x[, ..i]), X = as.matrix(covs), return.raw = TRUE)$residuals,
-        collapse::flm(y = as.matrix(x[, ..j]), X = as.matrix(covs), return.raw = TRUE)$residuals
-      )
-
       if (sum(cca) == nrow(x)) {
         tmp <- stats::cor(
           collapse::flm(y = as.matrix(x[, ..i]), X = as.matrix(covs), return.raw = TRUE)$residuals,
@@ -54,11 +49,11 @@
         )
       }
 
-      if (exists("cor_out")) {
+      if (exists("tmp")) {
         out[[j]] <- data.table::data.table(
           "var1" = columns[i],
           "var2" = columns[j],
-          "cor"  = tmp
+          "cor"  = tmp[1]
         )
       } else {
         out[[j]] <- data.table::data.table(
@@ -96,11 +91,6 @@
     for (j in cols) {
       if (j >= i) next
       cca <- stats::complete.cases(x[, .SD, .SDcols = c(columns[c(i, j)])])
-      tmp <- stats::cor(
-        collapse::flm(y = as.matrix(x[, ..i]), X = as.matrix(covs), w = w, return.raw = TRUE)$residuals,
-        collapse::flm(y = as.matrix(x[, ..j]), X = as.matrix(covs), w = w, return.raw = TRUE)$residuals
-      )
-
       if (sum(cca) == nrow(x)) {
         tmp <- stats::cor(
           collapse::flm(y = as.matrix(x[, ..i]), X = as.matrix(covs), w = w, return.raw = TRUE)$residuals,
@@ -113,11 +103,11 @@
         )
       }
 
-      if (exists("cor_out")) {
+      if (exists("tmp")) {
         out[[j]] <- data.table::data.table(
           "var1" = columns[i],
           "var2" = columns[j],
-          "cor"  = tmp
+          "cor"  = tmp[1]
         )
       } else {
         out[[j]] <- data.table::data.table(
@@ -175,7 +165,7 @@ fcor <- function(x, covs = NULL, covs1 = NULL, w = NULL, n_cores = 1, verbose = 
     } else {
         tmp <- .pcor_helper(x = x, covs = covs, covs1 = covs1, ncores = n_cores)
     }
-    if (!data.table::is.data.table(tmp)) tmp <- data.table::rbindlist(tmp)
+    if (!data.table::is.data.table(tmp)) tmp <- data.table::rbindlist(tmp, use.names = TRUE, fill = TRUE)
   }
   if (!is.null(covs) & !is.null(w)){
     if (verbose) cli::cli_alert("weighted partial correlation")
@@ -184,7 +174,7 @@ fcor <- function(x, covs = NULL, covs1 = NULL, w = NULL, n_cores = 1, verbose = 
     } else {
         tmp <- .pwcor_helper(x = x, covs = covs, covs1 = covs1, w = w, ncores = n_cores)
     }
-    if (!data.table::is.data.table(tmp)) tmp <- data.table::rbindlist(tmp)
+    if (!data.table::is.data.table(tmp)) tmp <- data.table::rbindlist(tmp, use.names = TRUE, fill = TRUE)
   }
   return(tmp)
 }
