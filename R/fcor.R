@@ -6,8 +6,12 @@
 #' @importFrom data.table as.data.table
 #' @return data.table with pairwise correlations
 
-.wcor_helper <- function(x, w = NULL) {
-  tmp <- collapse::pwcor(x, w = w)
+.correlation <- function(x, w = NULL) {
+  if (!is.null(w)) {
+    tmp <- cor(x)
+  } else {
+    tmp <- collapse::pwcor(x, w = w)
+  }
   tmp[lower.tri(tmp, diag = TRUE)] <- NA
   tmp <- data.table::as.data.table(as.table(tmp))
   tmp <- stats::na.omit(tmp)
@@ -28,7 +32,7 @@
 #' @importFrom collapse flm
 #' @return data.table with unweighted pairwise partial correlations
 
-.pcor_helper <- function(x, covs, covs1 = NULL, ncores) {
+.partial_correlation <- function(x, covs, covs1 = NULL, ncores = 1) {
   doMC::registerDoMC(cores = ncores)
   columns <- colnames(x)
   cols    <- 1:ncol(x)
@@ -73,16 +77,18 @@
 #' @param covs1 alternate matrix of variables that serve as covariates when pairwise correlation is not complete
 #' @param ncores number of cores over which to parallelize
 #' @param w vector of weights
-#' @importFrom stats cor
+#' @importFrom stats complete.cases
 #' @importFrom doMC registerDoMC
 #' @importFrom foreach foreach
 #' @importFrom foreach `%dopar%`
+#' @importFrom data.table is.data.table
 #' @importFrom data.table data.table
 #' @importFrom data.table rbindlist
 #' @importFrom collapse flm
+#' @importFrom wCorr weightedCorr
 #' @return data.table with weighted pairwise partial correlations
 
-.pwcor_helper <- function(x, covs, covs1 = NULL, w = NULL, ncores) {
+.weighted_partial_correlation <- function(x, covs, covs1 = NULL, w = NULL, ncores = 1) {
   doMC::registerDoMC(cores = ncores)
   columns <- colnames(x)
   cols    <- 1:ncol(x)
@@ -92,14 +98,16 @@
       if (j >= i) next
       cca <- stats::complete.cases(x[, .SD, .SDcols = c(columns[c(i, j)])])
       if (sum(cca) == nrow(x)) {
-        tmp <- stats::cor(
+        tmp <- wCorr::weightedCorr(
           collapse::flm(y = as.matrix(x[, ..i]), X = as.matrix(covs), w = w, return.raw = TRUE)$residuals,
-          collapse::flm(y = as.matrix(x[, ..j]), X = as.matrix(covs), w = w, return.raw = TRUE)$residuals
+          collapse::flm(y = as.matrix(x[, ..j]), X = as.matrix(covs), w = w, return.raw = TRUE)$residuals,
+          method = "Pearson"
         )
       } else if (sum(cca) < nrow(x) && sum(cca != 0)) {
-        tmp <- stats::cor(
+        tmp <- wCorr::weightedCorr(
           collapse::flm(y = as.matrix(x[cca, ..i]), X = as.matrix(covs1[cca, ]), w = w[cca], return.raw = TRUE)$residuals,
-          collapse::flm(y = as.matrix(x[cca, ..j]), X = as.matrix(covs1[cca, ]), w = w[cca], return.raw = TRUE)$residuals
+          collapse::flm(y = as.matrix(x[cca, ..j]), X = as.matrix(covs1[cca, ]), w = w[cca], return.raw = TRUE)$residuals,
+          method = "Pearson"
         )
       }
 
@@ -118,7 +126,11 @@
     }
     data.table::rbindlist(out, use.names = TRUE, fill = TRUE)
   }
-  output
+  if (!data.table::is.data.table(output)) {
+    data.table::rbindlist(output)
+  } else {
+    output
+  }
 }
 
 #' Export foreach infix operator for use within package
@@ -152,27 +164,27 @@
 fcor <- function(x, covs = NULL, covs1 = NULL, w = NULL, n_cores = 1, verbose = FALSE) {
   if (is.null(covs) & is.null(w)){
     if (verbose) cli::cli_alert("unweighted correlation")
-    tmp <- .wcor_helper(x = x, w = NULL)
+    tmp <- .correlation(x = x, w = NULL)
   }
   if (is.null(covs) & !is.null(w)){
     if (verbose) cli::cli_alert("weighted correlation")
-    tmp <- .wcor_helper(x = x, w = w)
+    tmp <- .correlation(x = x, w = w)
   }
   if (!is.null(covs) & is.null(w)){
     if (verbose) cli::cli_alert("unweighted partial correlation")
     if (is.null(covs1)) {
-        tmp <- .pcor_helper(x = x, covs = covs, ncores = n_cores)
+        tmp <- .partial_correlation(x = x, covs = covs, ncores = n_cores)
     } else {
-        tmp <- .pcor_helper(x = x, covs = covs, covs1 = covs1, ncores = n_cores)
+        tmp <- .partial_correlation(x = x, covs = covs, covs1 = covs1, ncores = n_cores)
     }
     if (!data.table::is.data.table(tmp)) tmp <- data.table::rbindlist(tmp, use.names = TRUE, fill = TRUE)
   }
   if (!is.null(covs) & !is.null(w)){
     if (verbose) cli::cli_alert("weighted partial correlation")
     if (is.null(covs1)) {
-        tmp <- .pwcor_helper(x = x, covs = covs, w = w, ncores = n_cores)
+        tmp <- .weighted_partial_correlation(x = x, covs = covs, w = w, ncores = n_cores)
     } else {
-        tmp <- .pwcor_helper(x = x, covs = covs, covs1 = covs1, w = w, ncores = n_cores)
+        tmp <- .weighted_partial_correlation(x = x, covs = covs, covs1 = covs1, w = w, ncores = n_cores)
     }
     if (!data.table::is.data.table(tmp)) tmp <- data.table::rbindlist(tmp, use.names = TRUE, fill = TRUE)
   }
