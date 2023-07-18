@@ -4,10 +4,12 @@
 \alias{libri}
 \title{Check for, install, and load CRAN and GitHub R packages}
 \usage{
-libri(...)
+libri(..., verbose = TRUE)
 }
 \arguments{
 \item{...}{A list of unquoted R packages to install/load}
+
+\item{verbose}{return summary of install, load, and preloaded}
 }
 \value{
 Checks to see whether packages are already installed or loaded. If not installed, will install. If already loaded, will skip loading. Otherwise, will load libraries and provide a quick summary.

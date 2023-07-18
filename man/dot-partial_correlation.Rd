@@ -4,14 +4,14 @@
 \alias{.partial_correlation}
 \title{Helper: perform rapid (parallel) partial correlation calculations on a matrix}
 \usage{
-.partial_correlation(x, covs, covs1 = NULL, ncores = 1)
+.partial_correlation(x, covs, covs_alt = NULL, ncores = 1)
 }
 \arguments{
 \item{x}{matrix of variables over which to calculate pairwise correlations}
 
 \item{covs}{matrix of variables that serve as covariates}
 
-\item{covs1}{alternate matrix of variables that serve as covariates when pairwise correlation is not complete}
+\item{covs_alt}{alternate matrix of variables that serve as covariates when pairwise correlation is not complete}
 
 \item{ncores}{number of cores over which to parallelize}
 }

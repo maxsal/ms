@@ -29,6 +29,7 @@
 
 #' Check for, install, and load CRAN and GitHub R packages
 #' @param ... A list of unquoted R packages to install/load
+#' @param verbose return summary of install, load, and preloaded
 #' @return Checks to see whether packages are already installed or loaded. If not installed, will install. If already loaded, will skip loading. Otherwise, will load libraries and provide a quick summary.
 #' @importFrom utils install.packages
 #' @importFrom cli cli_h1

@@ -4,14 +4,14 @@
 \alias{fcor}
 \title{Perform rapid (parallel) unweighted and weighted (partial) correlations on a matrix}
 \usage{
-fcor(x, covs = NULL, covs1 = NULL, w = NULL, n_cores = 1, verbose = FALSE)
+fcor(x, covs = NULL, covs_alt = NULL, w = NULL, n_cores = 1, verbose = FALSE)
 }
 \arguments{
 \item{x}{matrix of variables over which to calculate pairwise correlations}
 
 \item{covs}{matrix of variables that serve as covariates}
 
-\item{covs1}{alternate matrix of variables that serve as covariates when pairwise correlation is not complete}
+\item{covs_alt}{alternate matrix of variables that serve as covariates when pairwise correlation is not complete}
 
 \item{w}{vector of weights}
 
