@@ -21,7 +21,7 @@
 #' Helper: perform rapid (parallel) partial correlation calculations on a matrix
 #' @param x matrix of variables over which to calculate pairwise correlations
 #' @param covs matrix of variables that serve as covariates
-#' @param covs1 alternate matrix of variables that serve as covariates when pairwise correlation is not complete
+#' @param covs_alt alternate matrix of variables that serve as covariates when pairwise correlation is not complete
 #' @param ncores number of cores over which to parallelize
 #' @importFrom stats cor
 #' @importFrom doMC registerDoMC
@@ -32,7 +32,7 @@
 #' @importFrom collapse flm
 #' @return data.table with unweighted pairwise partial correlations
 
-.partial_correlation <- function(x, covs, covs1 = NULL, ncores = 1) {
+.partial_correlation <- function(x, covs, covs_alt = NULL, ncores = 1) {
   doMC::registerDoMC(cores = ncores)
   columns <- colnames(x)
   cols    <- 1:ncol(x)
@@ -48,8 +48,8 @@
         )
       } else if (sum(cca) < nrow(x) && sum(cca != 0)) {
         tmp <- stats::cor(
-          collapse::flm(y = as.matrix(x[cca, ..i]), X = as.matrix(covs1[cca, ]), return.raw = TRUE)$residuals,
-          collapse::flm(y = as.matrix(x[cca, ..j]), X = as.matrix(covs1[cca, ]), return.raw = TRUE)$residuals
+          collapse::flm(y = as.matrix(x[cca, ..i]), X = as.matrix(covs_alt[cca, ]), return.raw = TRUE)$residuals,
+          collapse::flm(y = as.matrix(x[cca, ..j]), X = as.matrix(covs_alt[cca, ]), return.raw = TRUE)$residuals
         )
       }
 
@@ -74,7 +74,7 @@
 #' Helper: perform rapid (parallel) weighted partial correlation calculations on a matrix
 #' @param x matrix of variables over which to calculate pairwise correlations
 #' @param covs matrix of variables that serve as covariates
-#' @param covs1 alternate matrix of variables that serve as covariates when pairwise correlation is not complete
+#' @param covs_alt alternate matrix of variables that serve as covariates when pairwise correlation is not complete
 #' @param ncores number of cores over which to parallelize
 #' @param w vector of weights
 #' @importFrom stats complete.cases
@@ -158,7 +158,7 @@
 #' Perform rapid (parallel) unweighted and weighted (partial) correlations on a matrix
 #' @param x matrix of variables over which to calculate pairwise correlations
 #' @param covs matrix of variables that serve as covariates
-#' @param covs1 alternate matrix of variables that serve as covariates when pairwise correlation is not complete
+#' @param covs_alt alternate matrix of variables that serve as covariates when pairwise correlation is not complete
 #' @param w vector of weights
 #' @param n_cores number of cores over which to parallelize
 #' @param verbose logical; report what correlations are being calculate
@@ -187,7 +187,7 @@ fcor <- function(x, covs = NULL, covs_alt = NULL, w = NULL, n_cores = 1, verbose
   }
   if (!is.null(covs) & is.null(w)){
     if (verbose) cli::cli_alert("unweighted partial correlation")
-    if (is.null(covs1)) {
+    if (is.null(covs_alt)) {
         tmp <- .partial_correlation(x = x, covs = covs, ncores = n_cores)
     } else {
         tmp <- .partial_correlation(x = x, covs = covs, covs_alt = covs_alt, ncores = n_cores)
@@ -196,7 +196,7 @@ fcor <- function(x, covs = NULL, covs_alt = NULL, w = NULL, n_cores = 1, verbose
   }
   if (!is.null(covs) & !is.null(w)){
     if (verbose) cli::cli_alert("weighted partial correlation")
-    if (is.null(covs1)) {
+    if (is.null(covs_alt)) {
         tmp <- .weighted_partial_correlation(x = x, covs = covs, w = w, ncores = n_cores)
     } else {
         tmp <- .weighted_partial_correlation(x = x, covs = covs, covs_alt = covs_alt, w = w, ncores = n_cores)
