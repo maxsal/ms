@@ -90,7 +90,7 @@
 #' @importFrom wCorr weightedCorr
 #' @return data.table with weighted pairwise partial correlations
 
-.weighted_partial_correlation <- function(x, covs, covs1 = NULL, w = NULL, ncores = 1) {
+.weighted_partial_correlation <- function(x, covs, covs_alt = NULL, w = NULL, ncores = 1) {
   doMC::registerDoMC(cores = ncores)
   x2      <- data.table::copy(data.table::as.data.table(x))
   columns <- colnames(x2)
@@ -102,9 +102,11 @@
 
   x2[, (vars_no_missing) := lapply(.SD, \(x) collapse::flm(y = as.matrix(x), X = as.matrix(covs), w = w, return.raw = TRUE)$residuals), .SDcols = vars_no_missing]
 
+  if (is.null(covs_alt)) covs_alt <- covs
+
   for (i in seq_along(vars_with_missing)) {
     indx <- which(!is.na(x2[[vars_with_missing[i]]]))
-    x2[indx, ][[vars_with_missing[i]]] <- collapse::flm(y = as.matrix(x2[indx, ][[vars_with_missing[i]]]), X = as.matrix(covs1[indx, ]), w = w[indx], return.raw = TRUE)$residuals
+    x2[indx, ][[vars_with_missing[i]]] <- collapse::flm(y = as.matrix(x2[indx, ][[vars_with_missing[i]]]), X = as.matrix(covs_alt[indx, ]), w = w[indx], return.raw = TRUE)$residuals
   }
 
   output <- foreach::foreach(i = cols) %dopar% {
@@ -174,7 +176,7 @@
 #' fcor(x = data, covs = covs, w = wgt, n_cores = 1)
 #' }
 
-fcor <- function(x, covs = NULL, covs1 = NULL, w = NULL, n_cores = 1, verbose = FALSE) {
+fcor <- function(x, covs = NULL, covs_alt = NULL, w = NULL, n_cores = 1, verbose = FALSE) {
   if (is.null(covs) & is.null(w)){
     if (verbose) cli::cli_alert("unweighted correlation")
     tmp <- .correlation(x = x, w = NULL)
@@ -188,7 +190,7 @@ fcor <- function(x, covs = NULL, covs1 = NULL, w = NULL, n_cores = 1, verbose = 
     if (is.null(covs1)) {
         tmp <- .partial_correlation(x = x, covs = covs, ncores = n_cores)
     } else {
-        tmp <- .partial_correlation(x = x, covs = covs, covs1 = covs1, ncores = n_cores)
+        tmp <- .partial_correlation(x = x, covs = covs, covs_alt = covs_alt, ncores = n_cores)
     }
     if (!data.table::is.data.table(tmp)) tmp <- data.table::rbindlist(tmp, use.names = TRUE, fill = TRUE)
   }
@@ -197,7 +199,7 @@ fcor <- function(x, covs = NULL, covs1 = NULL, w = NULL, n_cores = 1, verbose = 
     if (is.null(covs1)) {
         tmp <- .weighted_partial_correlation(x = x, covs = covs, w = w, ncores = n_cores)
     } else {
-        tmp <- .weighted_partial_correlation(x = x, covs = covs, covs1 = covs1, w = w, ncores = n_cores)
+        tmp <- .weighted_partial_correlation(x = x, covs = covs, covs_alt = covs_alt, w = w, ncores = n_cores)
     }
     if (!data.table::is.data.table(tmp)) tmp <- data.table::rbindlist(tmp, use.names = TRUE, fill = TRUE)
   }

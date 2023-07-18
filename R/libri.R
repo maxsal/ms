@@ -41,7 +41,7 @@
 #' libri(tidyverse, janitor, glue, maxsal/covid19india)
 #' }
 
-libri <- function(...) {
+libri <- function(..., verbose = TRUE) {
 
   if (.check_for_deps() == FALSE) {
     stop("`remotes` and `cli` packages are required: `install.packages(c('remotes', 'cli'))`")
@@ -108,9 +108,11 @@ libri <- function(...) {
   }
 
   # output summary ----------
-  cli::cli_h1("Summary")
-  if (preloaded > 0) cli::cli_alert_info("{preloaded} librar{?y/ies} already loaded: {paste(preloaded_libs, collapse = ', ')}")
-  if (installed > 0) cli::cli_alert_info("{installed} librar{?y/ies} installed: {paste(installed_libs, collapse = ', ')}")
-  if (newloads > 0) cli::cli_alert_success("{newloads} librar{?y/ies} loaded: {paste(newload_libs, collapse = ', ')}")
+  if (verbose) {
+    cli::cli_h1("Summary")
+    if (preloaded > 0) cli::cli_alert_info("{preloaded} librar{?y/ies} already loaded: {paste(preloaded_libs, collapse = ', ')}")
+    if (installed > 0) cli::cli_alert_info("{installed} librar{?y/ies} installed: {paste(installed_libs, collapse = ', ')}")
+    if (newloads > 0) cli::cli_alert_success("{newloads} librar{?y/ies} loaded: {paste(newload_libs, collapse = ', ')}")
+  }
 
 }
