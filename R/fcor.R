@@ -78,6 +78,7 @@
 #' @param ncores number of cores over which to parallelize
 #' @param w vector of weights
 #' @importFrom stats complete.cases
+#' @importFrom cli cli_alert
 #' @importFrom doMC registerDoMC
 #' @importFrom foreach foreach
 #' @importFrom foreach `%dopar%`
@@ -93,13 +94,15 @@
 .weighted_partial_correlation <- function(x, covs, covs_alt = NULL, w = NULL, ncores = 1) {
   doMC::registerDoMC(cores = ncores)
   x2      <- data.table::copy(data.table::as.data.table(x))
+  x2[, names(x2) := lapply(.SD, as.numeric)]
   columns <- colnames(x2)
   cols    <- 1:ncol(x2)
 
   # get residuals up front
   vars_with_missing <- names(which(sapply(x2, \(x) sum(is.na(x)) > 0)))
-  vars_no_missing <- setdiff(names(x2), vars_with_missing)
+  vars_no_missing   <- setdiff(names(x2), vars_with_missing)
 
+  cli_alert("getting residuals...")
   x2[, (vars_no_missing) := lapply(.SD, \(x) collapse::flm(y = as.matrix(x), X = as.matrix(covs), w = w, return.raw = TRUE)$residuals), .SDcols = vars_no_missing]
 
   if (is.null(covs_alt)) covs_alt <- covs
@@ -109,6 +112,7 @@
     x2[indx, ][[vars_with_missing[i]]] <- collapse::flm(y = as.matrix(x2[indx, ][[vars_with_missing[i]]]), X = as.matrix(covs_alt[indx, ]), w = w[indx], return.raw = TRUE)$residuals
   }
 
+  cli_alert("calculating correlation...")
   output <- foreach::foreach(i = cols) %dopar% {
     out <- list()
     for (j in cols) {
