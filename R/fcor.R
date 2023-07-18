@@ -81,7 +81,9 @@
 #' @importFrom doMC registerDoMC
 #' @importFrom foreach foreach
 #' @importFrom foreach `%dopar%`
+#' @importFrom data.table copy
 #' @importFrom data.table is.data.table
+#' @importFrom data.table as.data.table
 #' @importFrom data.table data.table
 #' @importFrom data.table rbindlist
 #' @importFrom collapse flm
@@ -90,25 +92,30 @@
 
 .weighted_partial_correlation <- function(x, covs, covs1 = NULL, w = NULL, ncores = 1) {
   doMC::registerDoMC(cores = ncores)
-  columns <- colnames(x)
-  cols    <- 1:ncol(x)
+  x2      <- data.table::copy(data.table::as.data.table(x))
+  columns <- colnames(x2)
+  cols    <- 1:ncol(x2)
+
+  # get residuals up front
+  vars_with_missing <- names(which(sapply(x2, \(x) sum(is.na(x)) > 0)))
+  vars_no_missing <- setdiff(names(x2), vars_with_missing)
+
+  x2[, (vars_no_missing) := lapply(.SD, \(x) collapse::flm(y = as.matrix(x), X = as.matrix(covs), w = w, return.raw = TRUE)$residuals), .SDcols = vars_no_missing]
+
+  for (i in seq_along(vars_with_missing)) {
+    indx <- which(!is.na(x2[[vars_with_missing[i]]]))
+    x2[indx, ][[vars_with_missing[i]]] <- collapse::flm(y = as.matrix(x2[indx, ][[vars_with_missing[i]]]), X = as.matrix(covs1[indx, ]), w = w[indx], return.raw = TRUE)$residuals
+  }
+
   output <- foreach::foreach(i = cols) %dopar% {
     out <- list()
     for (j in cols) {
       if (j >= i) next
-      cca <- stats::complete.cases(x[, .SD, .SDcols = c(columns[c(i, j)])])
-      if (sum(cca) == nrow(x)) {
-        tmp <- wCorr::weightedCorr(
-          collapse::flm(y = as.matrix(x[, ..i]), X = as.matrix(covs), w = w, return.raw = TRUE)$residuals,
-          collapse::flm(y = as.matrix(x[, ..j]), X = as.matrix(covs), w = w, return.raw = TRUE)$residuals,
-          method = "Pearson"
-        )
-      } else if (sum(cca) < nrow(x) && sum(cca != 0)) {
-        tmp <- wCorr::weightedCorr(
-          collapse::flm(y = as.matrix(x[cca, ..i]), X = as.matrix(covs1[cca, ]), w = w[cca], return.raw = TRUE)$residuals,
-          collapse::flm(y = as.matrix(x[cca, ..j]), X = as.matrix(covs1[cca, ]), w = w[cca], return.raw = TRUE)$residuals,
-          method = "Pearson"
-        )
+      cca <- stats::complete.cases(x2[, .SD, .SDcols = c(columns[c(i, j)])])
+      if (sum(cca) == nrow(x2)) {
+        tmp <- wCorr::weightedCorr(x = x2[[i]], y = x2[[j]], weights = w, method = "Pearson")
+      } else if (sum(cca) < nrow(x2) && sum(cca != 0)) {
+        tmp <- wCorr::weightedCorr(x = x2[cca, ][[i]], y = x2[cca, ][[j]], weights = w[cca], method = "Pearson")
       }
 
       if (exists("tmp")) {
@@ -139,6 +146,12 @@
 #' @importFrom foreach `%dopar%`
 
 `%dopar%` <- foreach::`%dopar%`
+
+#' Export data.table infix operator for use within package
+#' @param ... arguments defined for use in j of DT[i, j, k]
+#' @importFrom data.table `:=`
+
+`:=` <- data.table::`:=`
 
 #' Perform rapid (parallel) unweighted and weighted (partial) correlations on a matrix
 #' @param x matrix of variables over which to calculate pairwise correlations
