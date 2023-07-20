@@ -117,7 +117,7 @@
     out <- list()
     for (j in cols) {
       if (j >= i) next
-      cca <- stats::complete.cases(x2[, .SD, .SDcols = c(columns[c(i, j)])])
+      cca <- is.finite(x2[, .SD, .SDcols = c(columns[c(i, j)])])
       if (sum(cca) == nrow(x2)) {
         tmp <- wCorr::weightedCorr(x = x2[[i]], y = x2[[j]], weights = w, method = "Pearson")
       } else if (sum(cca) < nrow(x2) && sum(cca != 0)) {
