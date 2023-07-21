@@ -19,7 +19,7 @@ Imports:
     data.table,
     doMC,
     foreach,
-    wCorr
+    ppcor
 RoxygenNote: 7.2.3
 Depends: 
     R (>= 2.10)
