@@ -56,7 +56,7 @@
         )
       }
 
-      if (exists("tmp")) {
+      if (exists("cor_out")) {
         out[[j]] <- data.table::data.table(
           "var1" = columns[i],
           "var2" = columns[j],
