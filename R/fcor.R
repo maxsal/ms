@@ -139,7 +139,7 @@
     data.table::rbindlist(out, use.names = TRUE, fill = TRUE)
   }
   if (!data.table::is.data.table(output)) {
-    data.table::rbindlist(output)
+    data.table::rbindlist(output, use.names = TRUE, fill = TRUE)
   } else {
     output
   }
