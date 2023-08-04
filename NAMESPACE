@@ -2,6 +2,7 @@
 
 export(.onAttach)
 export(fcor)
+export(icdcm_desc)
 export(libri)
 export(merge_list)
 export(pbfor)
