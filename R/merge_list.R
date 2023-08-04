@@ -28,7 +28,7 @@
 
 merge_list <- function(data_list, join_fn = NULL, by_var = "id", verbose = FALSE) {
     if (!is.data.table(data_list[[1]])) data_list <- lapply(data_list, data.table::as.data.table)
-    if (!by_var %in% names(data_list[[1]])) {
+    if (!by_var %in names(data_list[[1]])) {
         cli::cli_alert_warning("{.field {by_var}} not in names of dataset")
         stop("change 'by_var' argument")
     }
