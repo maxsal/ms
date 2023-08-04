@@ -4,10 +4,10 @@
 \alias{merge_list}
 \title{Quickly merge across a list using dplyr-based merge functions}
 \usage{
-merge_list(..., join_fn = NULL, by_var = "id", verbose = FALSE)
+merge_list(data_list, join_fn = NULL, by_var = "id", verbose = FALSE)
 }
 \arguments{
-\item{...}{a list object}
+\item{data_list}{a list object of data frames to merge}
 
 \item{join_fn}{the function on which to join (default = dplyr::left_join)}
 
