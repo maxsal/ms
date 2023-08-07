@@ -27,10 +27,11 @@ Perform rapid (parallel) unweighted and weighted (partial) correlations on a mat
 }
 \examples{
 \dontrun{
-data <- data.frame(matrix(rnorm(100 * 50), ncol = 50))
-covs <- data.frame(matrix(rnorm(100 * 2), ncol = 2))
+data        <- data.frame(matrix(rnorm(100 * 50), ncol = 50))
+covs        <- data.frame(matrix(rnorm(100 * 2), ncol = 2))
+names(covs) <- c("C1", "C2")
 wgt <- 1/runif(100)
 
-fcor(x = data, covs = covs, w = wgt, n_cores = 1)
+fcor(x = data, covs = covs, w = wgt, n_cores = 1, verbose = TRUE)
 }
 }

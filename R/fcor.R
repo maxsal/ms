@@ -108,7 +108,9 @@
 
   # standardize up front
   x2[, (names(x2)) := lapply(.SD, \(x) scale(x))]
+  if (!data.table::is.data.table(covs2)) covs2 <- data.table::as.data.table(covs2)
   covs2[, names(covs2) := lapply(.SD, \(x) scale(x))]
+  if (!data.table::is.data.table(covs2_alt)) covs2_alt <- data.table::as.data.table(covs2_alt)
   covs2_alt[, names(covs2_alt) := lapply(.SD, \(x) scale(x))]
 
   cli_alert("calculating correlation...")
@@ -172,11 +174,12 @@
 #' @export
 #' @examples
 #' \dontrun{
-#' data <- data.frame(matrix(rnorm(100 * 50), ncol = 50))
-#' covs <- data.frame(matrix(rnorm(100 * 2), ncol = 2))
+#' data        <- data.frame(matrix(rnorm(100 * 50), ncol = 50))
+#' covs        <- data.frame(matrix(rnorm(100 * 2), ncol = 2))
+#' names(covs) <- c("C1", "C2")
 #' wgt <- 1/runif(100)
 #'
-#' fcor(x = data, covs = covs, w = wgt, n_cores = 1)
+#' fcor(x = data, covs = covs, w = wgt, n_cores = 1, verbose = TRUE)
 #' }
 
 fcor <- function(x, covs = NULL, covs_alt = NULL, w = NULL, n_cores = 1, verbose = FALSE) {
@@ -208,4 +211,3 @@ fcor <- function(x, covs = NULL, covs_alt = NULL, w = NULL, n_cores = 1, verbose
   }
   return(tmp)
 }
-
