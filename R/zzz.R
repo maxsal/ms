@@ -14,3 +14,16 @@
     datatable.print.trunc.cols = TRUE
     )
 }
+
+#' Export foreach infix operator for use within package
+#' @param obj left side of operator
+#' @param ex right side of operator
+#' @importFrom foreach `%dopar%`
+
+`%dopar%` <- foreach::`%dopar%`
+
+#' Export data.table infix operator for use within package
+#' @param ... arguments defined for use in j of DT[i, j, k]
+#' @importFrom data.table `:=`
+
+`:=` <- data.table::`:=`

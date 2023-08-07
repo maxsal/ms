@@ -20,7 +20,10 @@ Imports:
     doMC,
     foreach,
     ppcor,
-    dplyr
+    dplyr,
+    survey,
+    EValue,
+    glue
 RoxygenNote: 7.2.3
 Depends: 
     R (>= 2.10)

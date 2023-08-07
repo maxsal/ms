@@ -147,19 +147,6 @@
   }
 }
 
-#' Export foreach infix operator for use within package
-#' @param obj left side of operator
-#' @param ex right side of operator
-#' @importFrom foreach `%dopar%`
-
-`%dopar%` <- foreach::`%dopar%`
-
-#' Export data.table infix operator for use within package
-#' @param ... arguments defined for use in j of DT[i, j, k]
-#' @importFrom data.table `:=`
-
-`:=` <- data.table::`:=`
-
 #' Perform rapid (parallel) unweighted and weighted (partial) correlations on a matrix
 #' @param x matrix of variables over which to calculate pairwise correlations
 #' @param covs matrix of variables that serve as covariates
