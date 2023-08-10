@@ -13,7 +13,8 @@ cooccurrence_analysis(
   parallel = FALSE,
   min_case_count = 20,
   min_overlap_count = 5,
-  evalue = TRUE
+  evalue = TRUE,
+  verbose = FALSE
 )
 }
 \arguments{
@@ -34,6 +35,8 @@ cooccurrence_analysis(
 \item{min_overlap_count}{minimum number of cases with exposure to consider an exposure (default = 5)}
 
 \item{evalue}{logical; calculate evalues (default = TRUE)}
+
+\item{verbose}{logical; print notes (default = FALSE)}
 }
 \value{
 data.table of cooccurrence analysis results

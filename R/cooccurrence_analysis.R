@@ -63,6 +63,7 @@
 #' @param min_case_count minimum number of cases to consider an exposure (default = 20)
 #' @param min_overlap_count minimum number of cases with exposure to consider an exposure (default = 5)
 #' @param evalue logical; calculate evalues (default = TRUE)
+#' @param verbose logical; print notes (default = FALSE)
 #' @return data.table of cooccurrence analysis results
 #' @importFrom data.table melt
 #' @importFrom data.table data.table
@@ -92,7 +93,8 @@ cooccurrence_analysis <- function(
     parallel           = FALSE,
     min_case_count     = 20,
     min_overlap_count  = 5,
-    evalue             = TRUE
+    evalue             = TRUE,
+    verbose            = FALSE
 ) {
 
     data2 <- data |>
@@ -121,7 +123,7 @@ cooccurrence_analysis <- function(
         if (overlap[overlap >= min_overlap_count, .N] == 0) {
             stop("No exposures with sufficient overlap with cases.")
         }
-        if (overlap[overlap >= min_overlap_count, .N] != nrow(overlap)) {
+        if ((overlap[overlap >= min_overlap_count, .N] != nrow(overlap)) & verbose == TRUE) {
             cli::cli_alert(paste0(overlap[overlap < min_overlap_count, .N], " exposures removed due to insufficient overlap with cases."))
         }
         exposures_to_consider <- overlap[overlap >= min_overlap_count, exposure]
