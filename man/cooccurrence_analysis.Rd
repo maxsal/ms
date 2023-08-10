@@ -11,7 +11,8 @@ cooccurrence_analysis(
   weight_var = NULL,
   n_cores = 1,
   parallel = FALSE,
-  min_case_count = 10,
+  min_case_count = 20,
+  min_overlap_count = 5,
   evalue = TRUE
 )
 }
@@ -28,7 +29,9 @@ cooccurrence_analysis(
 
 \item{parallel}{logical; parallelize analyses (default = FALSE)}
 
-\item{min_case_count}{minimum number of cases to consider an exposure (default = 10)}
+\item{min_case_count}{minimum number of cases to consider an exposure (default = 20)}
+
+\item{min_overlap_count}{minimum number of cases with exposure to consider an exposure (default = 5)}
 
 \item{evalue}{logical; calculate evalues (default = TRUE)}
 }

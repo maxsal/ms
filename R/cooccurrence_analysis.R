@@ -60,16 +60,19 @@
 #' @param weight_var weight variable name
 #' @param n_cores number of cores over which to parallelize (default = 1)
 #' @param parallel logical; parallelize analyses (default = FALSE)
-#' @param min_case_count minimum number of cases to consider an exposure (default = 10)
+#' @param min_case_count minimum number of cases to consider an exposure (default = 20)
+#' @param min_overlap_count minimum number of cases with exposure to consider an exposure (default = 5)
 #' @param evalue logical; calculate evalues (default = TRUE)
 #' @return data.table of cooccurrence analysis results
 #' @importFrom data.table melt
+#' @importFrom data.table data.table
 #' @importFrom data.table as.data.table
 #' @importFrom data.table copy
 #' @importFrom data.table rbindlist
 #' @importFrom survey svydesign
 #' @importFrom foreach foreach
 #' @importFrom doMC registerDoMC
+#' @importFrom cli cli_alert
 #' @importFrom cli cli_progress_bar
 #' @importFrom cli cli_progress_update
 #' @importFrom cli cli_progress_done
@@ -87,7 +90,8 @@ cooccurrence_analysis <- function(
     weight_var         = NULL,
     n_cores            = 1,
     parallel           = FALSE,
-    min_case_count     = 10,
+    min_case_count     = 20,
+    min_overlap_count  = 5,
     evalue             = TRUE
 ) {
 
@@ -103,6 +107,25 @@ cooccurrence_analysis <- function(
         value.name = "n",
         id.vars = character()
     )[n >= min_case_count, as.character(exposure)]
+
+    # 1b. if min_overlap_count is specified, remove exposures with insufficient overlap
+    if (!is.null(min_overlap_count)) {
+        overlap <- list() 
+        for (i in seq_along(exposures_to_consider)) {
+            overlap[[i]] <- data.table::data.table(
+                exposure = exposures_to_consider[i],
+                overlap  = table(data2[[exposures_to_consider[i]]], data2[["case"]])[2, 2]
+            )
+        }
+        overlap <- data.table::rbindlist(overlap)
+        if (overlap[overlap >= min_overlap_count, .N] == 0) {
+            stop("No exposures with sufficient overlap with cases.")
+        }
+        if (overlap[overlap >= min_overlap_count, .N] != nrow(overlap)) {
+            cli::cli_alert(paste0(overlap[overlap < min_overlap_count, .N], " exposures removed dur to insufficient overlap with cases."))
+        }
+        exposures_to_consider <- overlap[overlap >= min_overlap_count, exposure]
+    }
 
     # 2. make design if weighted
     if (!is.null(weight_var)) {
