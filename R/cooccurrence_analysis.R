@@ -144,7 +144,7 @@ cooccurrence_analysis <- function(
     if (parallel == FALSE) {
         out <- list()
         cli::cli_progress_bar(
-            name = glue::glue("t = {t_thresh} threshold"),
+            name = "cooccurrence_analysis",
             total = length(exposures_to_consider)
         )
         for (i in seq_along(exposures_to_consider)) {
