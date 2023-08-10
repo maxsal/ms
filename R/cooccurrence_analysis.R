@@ -122,7 +122,7 @@ cooccurrence_analysis <- function(
             stop("No exposures with sufficient overlap with cases.")
         }
         if (overlap[overlap >= min_overlap_count, .N] != nrow(overlap)) {
-            cli::cli_alert(paste0(overlap[overlap < min_overlap_count, .N], " exposures removed dur to insufficient overlap with cases."))
+            cli::cli_alert(paste0(overlap[overlap < min_overlap_count, .N], " exposures removed due to insufficient overlap with cases."))
         }
         exposures_to_consider <- overlap[overlap >= min_overlap_count, exposure]
     }
