@@ -72,7 +72,9 @@
 #' @importFrom data.table rbindlist
 #' @importFrom survey svydesign
 #' @importFrom foreach foreach
-#' @importFrom doMC registerDoMC
+#' @importFrom parallel makeCluster
+#' @importFrom parallel stopCluster
+#' @importFrom doParallel registerDoParallel
 #' @importFrom cli cli_alert
 #' @importFrom cli cli_progress_bar
 #' @importFrom cli cli_progress_update
@@ -162,10 +164,11 @@ cooccurrence_analysis <- function(
     }
 
     if (parallel == TRUE) {
-        doMC::registerDoMC(cores = n_cores)
+        cl <- parallel::makeCluster(n_cores, type = "PSOCK")
+        doParallel::registerDoParallel(cl)
         columns <- exposures_to_consider
         cols    <- seq_along(exposures_to_consider)
-        output <- foreach::foreach(i = cols) %dopar% {
+        output <- foreach::foreach(i = cols, .combine = rbind) %dopar% {
             .quick_cooccur_mod(
                 data       = data2,
                 covariates = covariates,
@@ -174,7 +177,7 @@ cooccurrence_analysis <- function(
                 evalue     = evalue
             )
         }
-        out <- data.table::rbindlist(output, use.names = TRUE, fill = TRUE)
+        parallel::stopCluster(cl)
     }
 
     return(out)

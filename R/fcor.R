@@ -24,7 +24,9 @@
 #' @param covs_alt alternate matrix of variables that serve as covariates when pairwise correlation is not complete
 #' @param ncores number of cores over which to parallelize
 #' @importFrom stats cor
-#' @importFrom doMC registerDoMC
+#' @importFrom doParallel registerDoParallel
+#' @importFrom parallel makeCluster
+#' @importFrom parallel stopCluster
 #' @importFrom foreach foreach
 #' @importFrom foreach `%dopar%`
 #' @importFrom data.table data.table
@@ -33,11 +35,12 @@
 #' @return data.table with unweighted pairwise partial correlations
 
 .partial_correlation <- function(x, covs, covs_alt = NULL, ncores = 1) {
-  doMC::registerDoMC(cores = ncores)
+  cl <- parallel::makeCluster(ncores, type = "PSOCK")
+  doParallel::registerDoParallel(cl)
   if (is.null(covs_alt)) covs_alt <- covs
   columns <- colnames(x)
   cols    <- 1:ncol(x)
-  output <- foreach::foreach(i = cols) %dopar% {
+  output <- foreach::foreach(i = cols, .combine = rbind) %dopar% {
     out <- list()
     for (j in cols) {
       if (j >= i) next
@@ -69,8 +72,8 @@
         )
       }
     }
-    data.table::rbindlist(out, use.names = TRUE, fill = TRUE)
   }
+  parallel::stopCluster(cl)
   output
 }
 
@@ -82,7 +85,9 @@
 #' @param w vector of weights
 #' @importFrom stats complete.cases
 #' @importFrom cli cli_alert
-#' @importFrom doMC registerDoMC
+#' @importFrom doParallel registerDoParallel
+#' @importFrom parallel makeCluster
+#' @importFrom parallel stopCluster
 #' @importFrom foreach foreach
 #' @importFrom foreach `%dopar%`
 #' @importFrom data.table copy
@@ -94,7 +99,8 @@
 #' @return data.table with weighted pairwise partial correlations
 
 .weighted_partial_correlation <- function(x, covs, covs_alt = NULL, w = NULL, ncores = 1) {
-  doMC::registerDoMC(cores = ncores)
+  cl <- parallel::makeCluster(ncores, type = "PSOCK")
+  doParallel::registerDoParallel(cl)
   x2 <- data.table::copy(data.table::as.data.table(x))
   x2[, names(x2) := lapply(.SD, as.numeric)]
   covs2 <- data.table::copy(covs)
@@ -104,7 +110,7 @@
     covs2_alt <- covs_alt
   }
   columns <- colnames(x2)
-  cols <- 1:ncol(x2)
+  cols    <- 1:ncol(x2)
 
   # standardize up front
   x2[, (names(x2)) := lapply(.SD, \(x) scale(x))]
@@ -113,8 +119,8 @@
   if (!data.table::is.data.table(covs2_alt)) covs2_alt <- data.table::as.data.table(covs2_alt)
   covs2_alt[, names(covs2_alt) := lapply(.SD, \(x) scale(x))]
 
-  cli_alert("calculating correlation...")
-  output <- foreach::foreach(i = cols) %dopar% {
+  cli::cli_alert("calculating correlation...")
+  output <- foreach::foreach(i = cols, .combine = rbind) %dopar% {
     out <- list()
     for (j in cols) {
       if (j >= i) next
@@ -138,8 +144,9 @@
         )
       }
     }
-    data.table::rbindlist(out, use.names = TRUE, fill = TRUE)
+    out
   }
+  parallel::stopCluster(cl)
   if (!data.table::is.data.table(output)) {
     data.table::rbindlist(output, use.names = TRUE, fill = TRUE)
   } else {
