@@ -178,6 +178,11 @@ cooccurrence_analysis <- function(
             )
         }
         parallel::stopCluster(cl)
+        if (!data.table::is.data.table(output)) {
+            out <- data.table::as.data.table(output)
+        } else {
+            out <- output
+        }
     }
 
     return(out)
