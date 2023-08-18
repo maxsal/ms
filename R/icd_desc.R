@@ -38,7 +38,7 @@ icd_desc <- function(x, code_col = "code", vocab_col = "vocabulary_id", simplify
         tmp10cm <- ms::icd10cm[code %in% out[get(vocab_col) == "ICD10CM", get(code_col)], .(code, vocabulary_id, description)]
     }
 
-    for (i in c("ICD9CM", "ICD10", "ICD10CM")) {
+    for (i in c("tmp9cm", "tmp10", "tmp10cm")) {
         if (!exists(i)) next
         if (!exists("tmp")) {
             tmp <- get(i)
