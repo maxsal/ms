@@ -21,7 +21,7 @@
 
 icd_desc <- function(x, code_col = "code", vocab_col = "vocabulary_id", simplify = FALSE, keep_old = NULL) {
     if (!data.table::is.data.table(x)) x <- data.table::as.data.table(x)
-    if (!any(c("ICD9CM", "ICD10CM") %in% x[[vocab_col]])) {
+    if (!any(c("ICD9CM", "ICD10", "ICD10CM") %in% x[[vocab_col]])) {
         stop("`vocabulary_id` must contain ICD9CM, ICD10, and/or ICD10CM")
     }
     out <- data.table::copy(x)
