@@ -30,7 +30,7 @@ icd_desc <- function(x, code_col = "code", vocab_col = "vocabulary_id", simplify
         tmp9cm <- ms::icd9cm[code %in% out[get(vocab_col) == "ICD9CM", get(code_col)], .(code, vocabulary_id, description)]
     }
 
-    if ("ICD10CM" %in% unique(x[[vocab_col]])) {
+    if ("ICD10" %in% unique(x[[vocab_col]])) {
         tmp10 <- ms::icd10[code %in% out[get(vocab_col) == "ICD10", get(code_col)], .(code, vocabulary_id, description)]
     }
 
