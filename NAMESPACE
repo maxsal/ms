@@ -3,7 +3,7 @@
 export(.onAttach)
 export(cooccurrence_analysis)
 export(fcor)
-export(icdcm_desc)
+export(icd_desc)
 export(libri)
 export(merge_list)
 export(pbfor)
