@@ -2,7 +2,7 @@
 % Please edit documentation in R/icdcm_desc.R
 \name{icdcm_desc}
 \alias{icdcm_desc}
-\title{Quickly attach ICD-9/ICD10-CM codes descriptions to a data.table}
+\title{Quickly attach ICD-10 and ICD-9/ICD10-CM codes descriptions to a data.table}
 \usage{
 icdcm_desc(
   x,
@@ -17,7 +17,7 @@ icdcm_desc(
 
 \item{code_col}{name of column in `x` that contains ICD codes}
 
-\item{vocab_col}{name of column in `x` that contains ICD vocabulary (ICD9CM or ICD10CM)}
+\item{vocab_col}{name of column in `x` that contains ICD vocabulary (ICD9CM, ICD10, or ICD10CM)}
 
 \item{simplify}{if TRUE, only return `code_col`, `vocabulary_id`, and `description` columns}
 
@@ -27,7 +27,7 @@ icdcm_desc(
 data.table with ICD code descriptions
 }
 \description{
-Quickly attach ICD-9/ICD10-CM codes descriptions to a data.table
+Quickly attach ICD-10 and ICD-9/ICD10-CM codes descriptions to a data.table
 }
 \examples{
 \dontrun{

@@ -6,23 +6,22 @@
 \title{ICD9CM code description}
 \format{
 ## `icd9cm`
-A data frame with 18,449 rows and 4 columns:
+A data frame with 17,564 rows and 4 columns:
 \describe{
-  \item{code}{ICD-9-CM diagnosis or procedure code. Dots added}
-  \item{description}{Short description of code.}
-  \item{vocabulary_id}{Incidates that the code is from the ICD-9-CM vocabulary. Does not distinguish between ICD-9-CM diagnosis or procedure codes.}
-  \item{diagnosis}{Indicates whether the code is a diagnosis code (1) or a procedure code (0).}
+  \item{code}{ICD-9-CM diagnosis code}
+  \item{description}{Description of code}
+  \item{vocabulary_id}{Incidates that the code is from the ICD-9-CM vocabulary}
   ...
 }
 }
 \source{
-Version 32 ICD-9-CM effective October 14, 2014 downloaded from https://www.cms.gov/medicare/coding/icd9providerdiagnosticcodes/codes on August 4, 2023.
+ICD-9-CM from Athena ODHSI downloaded from https://athena.ohdsi.org/ on August 9, 2023.
 }
 \usage{
 icd9cm
 }
 \description{
 A table listing ICD-9-CM diagnosis and procedure codes and their corresponding descriptions.
-Last manually curated on August 4, 2023.
+Last manually curated on August 18, 2023.
 }
 \keyword{datasets}
