@@ -3,42 +3,86 @@
 #' @param outcome outcome variable
 #' @param covariates vector of covariates
 #' @param exposure exposure variable
+#' @param weight_var weight variable name
 #' @param weight_dsn survey design object
 #' @param evalue logical; calculate evalues (default = TRUE)
+#' @param check_separation logical; check for separation (default = TRUE)
 #' @importFrom survey svyglm
 #' @importFrom stats glm
 #' @importFrom stats as.formula
+#' @importFrom stats binomial
 #' @importFrom stats quasibinomial
 #' @importFrom stats coef
+#' @importFrom stats vcov
+#' @importFrom stats coefficients
 #' @importFrom stats qnorm
+#' @importFrom logistf logistf
+#' @importFrom detectseparation detect_separation
 #' @importFrom EValue evalues.OR
 #' @return data.table with results from cooccurrence analysis
 .quick_cooccur_mod <- function(
     data,
-    covariates = c("age_at_threshold", "female", "length_followup"),
-    outcome    = "case",
-    exposure   = "X157",
-    weight_dsn = NULL,
-    evalue     = TRUE
+    covariates       = c("age_at_threshold", "female", "length_followup"),
+    outcome          = "case",
+    exposure         = "X157",
+    weight_var       = NULL,
+    weight_dsn       = NULL,
+    evalue           = TRUE,
+    check_separation = TRUE
 ) {
 
-    if (!is.null(weight_dsn)) {
-        mod <- survey::svyglm(
-            stats::as.formula(paste0(outcome, " ~ ", exposure, " + ", paste0(covariates, collapse = " + "))),
-            design = weight_dsn,
-            family = stats::quasibinomial()
+    if (check_separation) {
+        sep_check <- glm(paste0(outcome, " ~ ", exposure, " + ", paste0(covariates, collapse = " + ")), data = data, family = stats::binomial(), method = "detect_separation")
+        sep_check <- is.infinite(sep_check$coefficients[exposure])
+    } else {
+        sep_check <- FALSE
+    }
+
+    if (sep_check) {
+        if (is.null(weight_var)) {
+            mod <- logistf::logistf(
+                stats::as.formula(paste0(outcome, " ~ ", exposure, " + ", paste0(covariates, collapse = " + "))),
+                data = data
+            )
+        } else {
+            mod <- logistf::logistf(
+                stats::as.formula(paste0(outcome, " ~ ", exposure, " + ", paste0(covariates, collapse = " + "))),
+                data = data,
+                weights = weight_var
+            )
+        }
+        logor <- stats::coefficients(mod)[[exposure]]
+        se    <- sqrt(diag(stats::vcov(mod)))[which(mod$terms == exposure)]
+        p_val <- mod$prob[which(mod$terms == exposure)]
+        est   <- c(logor, se)
+        out <- data.table(
+            exposure = exposure,
+            beta     = logor,
+            se_beta  = se,
+            p_value  = p_val,
+            log10p   = log10(p_val)
         )
     } else {
-        mod <- glm(paste0(outcome, " ~ ", exposure, " + ", paste0(covariates, collapse = " + ")), data = data, family = quasibinomial())
+        if (!is.null(weight_dsn)) {
+            mod <- survey::svyglm(
+                stats::as.formula(paste0(outcome, " ~ ", exposure, " + ", paste0(covariates, collapse = " + "))),
+                design = weight_dsn,
+                family = stats::quasibinomial()
+            )
+        } else {
+            mod <- glm(paste0(outcome, " ~ ", exposure, " + ", paste0(covariates, collapse = " + ")), data = data, family = quasibinomial())
+        }
+
+        est <- summary(mod)$coef[exposure, c(1, 2)]
+        out <- data.table(
+            exposure = exposure,
+            beta     = stats::coef(mod)[[exposure]],
+            se_beta  = stats::coef(summary(mod))[exposure, 2],
+            p_value  = stats::coef(summary(mod))[exposure, 4],
+            log10p   = log10(stats::coef(summary(mod))[exposure, 4])
+        )
     }
-    est <- summary(mod)$coef[exposure, c(1, 2)]
-    out <- data.table(
-        exposure = exposure,
-        beta     = stats::coef(mod)[[exposure]],
-        se_beta  = stats::coef(summary(mod))[exposure, 2],
-        p_value  = stats::coef(summary(mod))[exposure, 4],
-        log10p   = log10(stats::coef(summary(mod))[exposure, 4])
-    )
+
     if (evalue == TRUE) {
         rare <- sum(mod$data[[exposure]], na.rm = TRUE) / nrow(mod$data)
         eval <- suppressMessages(evalues.OR(est = exp(est[[1]]), lo = exp(est[[1]] - stats::qnorm(0.975) * est[[2]]), hi = exp(est[[1]] + stats::qnorm(0.975) * est[[2]]), rare = ifelse(rare >= 0.15, FALSE, TRUE)))
@@ -49,7 +93,9 @@
             evalue_hi  = eval[2, 3]
         )]
     }
+
     out
+
 }
 
 
@@ -112,13 +158,17 @@ cooccurrence_analysis <- function(
         id.vars = character()
     )[n >= min_case_count, as.character(exposure)]
 
-    # 1b. if min_overlap_count is specified, remove exposures with insufficient overlap
+    # 1b. if min_overlap_count is specified, separate exposures with insufficient overlap
     if (!is.null(min_overlap_count)) {
         overlap <- list() 
         for (i in seq_along(exposures_to_consider)) {
             overlap[[i]] <- data.table::data.table(
                 exposure = exposures_to_consider[i],
-                overlap  = table(data2[[exposures_to_consider[i]]], data2[["case"]])[2, 2]
+                overlap  = ifelse(
+                    identical(data2[, .N, c(exposures_to_consider[i], "case")][get(exposures_to_consider[i]) == 1 & case == 1, N], integer(0)),
+                    0,
+                    data2[, .N, c(exposures_to_consider[i], "case")][get(exposures_to_consider[i]) == 1 & case == 1, N]
+                )
             )
         }
         overlap <- data.table::rbindlist(overlap)
@@ -126,9 +176,10 @@ cooccurrence_analysis <- function(
             stop("No exposures with sufficient overlap with cases.")
         }
         if ((overlap[overlap >= min_overlap_count, .N] != nrow(overlap)) & verbose == TRUE) {
-            cli::cli_alert(paste0(overlap[overlap < min_overlap_count, .N], " exposures removed due to insufficient overlap with cases."))
+            cli::cli_alert(paste0(overlap[overlap < min_overlap_count, .N], " exposures to be estimated using logistf."))
         }
         exposures_to_consider <- overlap[overlap >= min_overlap_count, exposure]
+        exposures_overlap     <- overlap[overlap < min_overlap_count, exposure]
     }
 
     # 2. make design if weighted
@@ -154,10 +205,23 @@ cooccurrence_analysis <- function(
                 data       = data2,
                 covariates = covariates,
                 exposure   = exposures_to_consider[i],
+                weight_var = weight_var,
                 weight_dsn = weight_design,
                 evalue     = evalue
             )
             cli::cli_progress_update()
+        }
+        if (!is.null(exposures_overlap)) {
+            output2 <- foreach::foreach(i = seq_along(exposures_overlap), .combine = rbind) %dopar% {
+                .quick_cooccur_mod(
+                    data             = data2,
+                    covariates       = covariates,
+                    exposure         = exposures_overlap[i],
+                    weight_var       = weight_var,
+                    evalue           = evalue,
+                    check_separation = TRUE
+                )
+            }
         }
         cli::cli_progress_done()
         out <- data.table::rbindlist(out)
@@ -170,20 +234,32 @@ cooccurrence_analysis <- function(
         cols    <- seq_along(exposures_to_consider)
         output <- foreach::foreach(i = cols, .combine = rbind) %dopar% {
             .quick_cooccur_mod(
-                data       = data2,
-                covariates = covariates,
-                exposure   = exposures_to_consider[i],
-                weight_dsn = weight_design,
-                evalue     = evalue
+                data             = data2,
+                covariates       = covariates,
+                exposure         = exposures_to_consider[i],
+                weight_dsn       = weight_design,
+                evalue           = evalue,
+                check_separation = FALSE
             )
         }
+        if (!is.null(exposures_overlap)) {
+            output2 <- foreach::foreach(i = seq_along(exposures_overlap), .combine = rbind) %dopar% {
+                .quick_cooccur_mod(
+                    data             = data2,
+                    covariates       = covariates,
+                    exposure         = exposures_overlap[i],
+                    weight_var       = weight_var,
+                    evalue           = evalue,
+                    check_separation = TRUE
+                )
+            }
+        }
         parallel::stopCluster(cl)
-        if (!data.table::is.data.table(output)) {
-            out <- data.table::as.data.table(output)
-        } else {
-            out <- output
+        if (!data.table::is.data.table(output))  out  <- data.table::as.data.table(output)
+        if (!is.null(exposures_overlap)) {
+            if (!data.table::is.data.table(output2)) out2 <- data.table::as.data.table(output2)
+            out <- data.table::rbindlist(list(out, out2), use.names = TRUE, fill = TRUE)
         }
     }
-
     return(out)
 }

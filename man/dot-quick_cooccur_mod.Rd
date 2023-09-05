@@ -9,8 +9,10 @@
   covariates = c("age_at_threshold", "female", "length_followup"),
   outcome = "case",
   exposure = "X157",
+  weight_var = NULL,
   weight_dsn = NULL,
-  evalue = TRUE
+  evalue = TRUE,
+  check_separation = TRUE
 )
 }
 \arguments{
@@ -22,9 +24,13 @@
 
 \item{exposure}{exposure variable}
 
+\item{weight_var}{weight variable name}
+
 \item{weight_dsn}{survey design object}
 
 \item{evalue}{logical; calculate evalues (default = TRUE)}
+
+\item{check_separation}{logical; check for separation (default = TRUE)}
 }
 \value{
 data.table with results from cooccurrence analysis
