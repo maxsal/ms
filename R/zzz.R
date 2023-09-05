@@ -13,6 +13,22 @@
     datatable.print.class      = TRUE,
     datatable.print.trunc.cols = TRUE
     )
+  attached <- ms_attach()
+}
+
+same_library <- function(pkg) {
+  loc <- if (pkg %in% loadedNamespaces()) dirname(getNamespaceInfo(pkg, "path"))
+  library(pkg, lib.loc = loc, character.only = TRUE, warn.conflicts = FALSE)
+}
+
+ms_attach <- function() {
+  to_load <- "detectseparation"
+
+  suppressPackageStartupMessages(
+    lapply(to_load, same_library)
+  )
+
+  invisible(to_load)
 }
 
 #' Export foreach infix operator for use within package

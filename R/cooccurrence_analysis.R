@@ -32,7 +32,6 @@
 ) {
 
     if (check_separation) {
-        requireNamespace(detectseparation)
         sep_check <- glm(paste0(outcome, " ~ ", exposure, " + ", paste0(covariates, collapse = " + ")), data = data, family = stats::binomial(), method = "detect_separation")
         sep_check <- is.infinite(sep_check$coefficients[exposure])
     } else {
