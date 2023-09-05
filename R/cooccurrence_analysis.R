@@ -211,9 +211,15 @@ cooccurrence_analysis <- function(
             )
             cli::cli_progress_update()
         }
+        cli::cli_progress_done()
         if (!is.null(exposures_overlap)) {
-            output2 <- foreach::foreach(i = seq_along(exposures_overlap), .combine = rbind) %dopar% {
-                .quick_cooccur_mod(
+            out2 <- list()
+            cli::cli_progress_bar(
+                name = "checking for separation",
+                total = length(exposures_overlap)
+            )
+            for (i in seq_along(exposures_overlap)) {
+                out2[[i]] <- .quick_cooccur_mod(
                     data             = data2,
                     covariates       = covariates,
                     exposure         = exposures_overlap[i],
@@ -221,10 +227,15 @@ cooccurrence_analysis <- function(
                     evalue           = evalue,
                     check_separation = TRUE
                 )
+                cli::cli_progress_update()
             }
         }
         cli::cli_progress_done()
-        out <- data.table::rbindlist(out)
+        if (!data.table::is.data.table(out)) out <- data.table::as.data.table(out)
+        if (!is.null(exposures_overlap)) {
+            if (!data.table::is.data.table(out2)) out2 <- data.table::as.data.table(out2)
+            out <- data.table::rbindlist(list(out, out2), use.names = TRUE, fill = TRUE)
+        }
     }
 
     if (parallel == TRUE) {
@@ -255,11 +266,12 @@ cooccurrence_analysis <- function(
             }
         }
         parallel::stopCluster(cl)
-        if (!data.table::is.data.table(output))  out  <- data.table::as.data.table(output)
+        if (!data.table::is.data.table(output))  output  <- data.table::as.data.table(output)
         if (!is.null(exposures_overlap)) {
-            if (!data.table::is.data.table(output2)) out2 <- data.table::as.data.table(output2)
-            out <- data.table::rbindlist(list(out, out2), use.names = TRUE, fill = TRUE)
+            if (!data.table::is.data.table(output2)) output2 <- data.table::as.data.table(output2)
+            out <- data.table::rbindlist(list(output, output2), use.names = TRUE, fill = TRUE)
         }
     }
+
     return(out)
 }
