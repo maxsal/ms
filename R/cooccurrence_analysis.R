@@ -45,10 +45,11 @@
                 data = data
             )
         } else {
+            wgt_ind <- which(!is.na(data[[weight_var]]))
             mod <- logistf::logistf(
                 stats::as.formula(paste0(outcome, " ~ ", exposure, " + ", paste0(covariates, collapse = " + "))),
-                data = data,
-                weights = weight_var
+                data = data[wgt_ind, ],
+                weights = data[wgt_ind, ][[weight_var]]
             )
         }
         logor <- stats::coefficients(mod)[[exposure]]
@@ -60,7 +61,8 @@
             beta     = logor,
             se_beta  = se,
             p_value  = p_val,
-            log10p   = log10(p_val)
+            log10p   = log10(p_val),
+            sep      = sep_check
         )
     } else {
         if (!is.null(weight_dsn)) {
@@ -79,7 +81,8 @@
             beta     = stats::coef(mod)[[exposure]],
             se_beta  = stats::coef(summary(mod))[exposure, 2],
             p_value  = stats::coef(summary(mod))[exposure, 4],
-            log10p   = log10(stats::coef(summary(mod))[exposure, 4])
+            log10p   = log10(stats::coef(summary(mod))[exposure, 4]),
+            sep      = sep_check
         )
     }
 
