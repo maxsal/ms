@@ -37,24 +37,30 @@
 .partial_correlation <- function(x, covs, covs_alt = NULL, ncores = 1) {
   cl <- parallel::makeCluster(ncores, type = "PSOCK")
   doParallel::registerDoParallel(cl)
-  if (is.null(covs_alt)) covs_alt <- covs
-  columns <- colnames(x)
-  cols    <- 1:ncol(x)
-  output <- foreach::foreach(i = cols, .combine = rbind) %dopar% {
+  covs2 <- data.table::copy(covs)
+  if (is.null(covs_alt)) {
+    covs2_alt <- covs2 
+  } else {
+    cov2_alt <- data.table::copy(data.table::as.data.table(covs_alt))
+  }
+  x2 <- data.table::copy(data.table::as.data.table(x))
+  columns <- colnames(x2)
+  cols    <- 1:ncol(x2)
+  output <- foreach::foreach(i = cols) %dopar% {
     out <- list()
     for (j in cols) {
       if (j >= i) next
-      cca <- stats::complete.cases(x[, .SD, .SDcols = c(columns[c(i, j)])])
-      if (sum(cca) == nrow(x)) {
-        cor_out <- ppcor::pcor.test(x[, ..i],
-                             x[, ..j],
-                             covs,
+      cca <- stats::complete.cases(x2[, .SD, .SDcols = c(columns[c(i, j)])])
+      if (sum(cca) == nrow(x2)) {
+        cor_out <- ppcor::pcor.test(x2[, ..i],
+                             x2[, ..j],
+                             covs2,
                              method = "pearson"
         )
-      } else if (sum(cca) < nrow(x) && sum(cca != 0)) {
-        cor_out <- ppcor::pcor.test(x[cca, ..i],
-                             x[cca, ..j],
-                             covs_alt[cca, ],
+      } else if (sum(cca) < nrow(x2) && sum(cca != 0)) {
+        cor_out <- ppcor::pcor.test(x2[cca, ..i],
+                             x2[cca, ..j],
+                             covs2_alt[cca, ],
                              method = "pearson"
         )
       }
@@ -120,7 +126,7 @@
   covs2_alt[, names(covs2_alt) := lapply(.SD, \(x) scale(x))]
 
   cli::cli_alert("calculating correlation...")
-  output <- foreach::foreach(i = cols, .combine = rbind) %dopar% {
+  output <- foreach::foreach(i = cols) %dopar% {
     out <- list()
     for (j in cols) {
       if (j >= i) next
