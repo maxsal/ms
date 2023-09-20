@@ -41,7 +41,7 @@
   if (is.null(covs_alt)) {
     covs2_alt <- covs2 
   } else {
-    cov2_alt <- data.table::copy(data.table::as.data.table(covs_alt))
+    covs2_alt <- data.table::copy(data.table::as.data.table(covs_alt))
   }
   x2 <- data.table::copy(data.table::as.data.table(x))
   columns <- colnames(x2)
