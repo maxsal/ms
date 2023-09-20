@@ -46,7 +46,7 @@
   x2 <- data.table::copy(data.table::as.data.table(x))
   columns <- colnames(x2)
   cols    <- 1:ncol(x2)
-  output <- foreach::foreach(i = cols) %dopar% {
+  output <- foreach::foreach(i = cols, .packages = c("data.table", "ppcor")) %dopar% {
     out <- list()
     for (j in cols) {
       if (j >= i) next
@@ -110,7 +110,7 @@
   doParallel::registerDoParallel(cl)
   x2 <- data.table::copy(data.table::as.data.table(x))
   x2[, names(x2) := lapply(.SD, as.numeric)]
-  covs2 <- data.table::copy(covs)
+  covs2 <- data.table::copy(data.table::as.data.table(covs))
   if (is.null(covs_alt)) {
     covs2_alt <- covs
   } else {
@@ -127,7 +127,7 @@
   covs2_alt[, names(covs2_alt) := lapply(.SD, \(x) scale(x))]
 
   cli::cli_alert("calculating correlation...")
-  output <- foreach::foreach(i = cols) %dopar% {
+  output <- foreach::foreach(i = cols, .packages = c("data.table", "collapse")) %dopar% {
     out <- list()
     for (j in cols) {
       if (j >= i) next
@@ -151,7 +151,7 @@
         )
       }
     }
-    out
+    rbindlist(out)
   }
   parallel::stopCluster(cl)
   if (!data.table::is.data.table(output)) {
