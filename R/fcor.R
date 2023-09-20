@@ -78,6 +78,7 @@
         )
       }
     }
+    rbindlist(out)
   }
   parallel::stopCluster(cl)
   output
