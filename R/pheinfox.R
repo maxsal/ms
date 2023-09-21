@@ -4,7 +4,7 @@
 #' description, category, and other information.
 #' Last manually curated on June 1, 2023.
 #'
-#' @format ## `pheinfo`
+#' @format ## `pheinfox`
 #' A data frame with 3,612 rows and 8 columns:
 #' \describe{
 #'   \item{phecode}{PheWAS Code (aka phecode)}

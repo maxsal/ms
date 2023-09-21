@@ -5,7 +5,7 @@
 \alias{pheinfox}
 \title{PheWAS catalog information}
 \format{
-## `pheinfo`
+## `pheinfox`
 A data frame with 3,612 rows and 8 columns:
 \describe{
   \item{phecode}{PheWAS Code (aka phecode)}
