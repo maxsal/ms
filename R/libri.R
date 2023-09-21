@@ -31,11 +31,10 @@
 #' @param ... A list of unquoted R packages to install/load
 #' @param verbose return summary of install, load, and preloaded
 #' @return Checks to see whether packages are already installed or loaded. If not installed, will install. If already loaded, will skip loading. Otherwise, will load libraries and provide a quick summary.
-#' @importFrom utils install.packages
+#' @importFrom pak pkg_install
 #' @importFrom cli cli_h1
 #' @importFrom cli cli_alert_info
 #' @importFrom cli cli_alert_success
-#' @importFrom remotes install_github
 #' @export
 #' @examples
 #' \dontrun{
@@ -66,9 +65,9 @@ libri <- function(..., verbose = TRUE) {
     if (.check_package_installed(tmp_lib) == FALSE) {
 
       if (grepl("/", libs[i]) == TRUE) {
-        remotes::install_github(libs[i])
+        pak::pkg_install(libs[i])
       } else {
-        utils::install.packages(libs[i])
+        pak::pkg_install(libs[i])
       }
       installed <- installed + 1
 
