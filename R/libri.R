@@ -63,12 +63,8 @@ libri <- function(..., verbose = TRUE) {
 
     # check install -----------
     if (.check_package_installed(tmp_lib) == FALSE) {
-
-      if (grepl("/", libs[i]) == TRUE) {
-        pak::pkg_install(libs[i])
-      } else {
-        pak::pkg_install(libs[i])
-      }
+      
+      pak::pkg_install(libs[i])
       installed <- installed + 1
 
       if (is.null(installed_libs)) {
