@@ -2,3 +2,7 @@
 ^\.Rproj\.user$
 ^LICENSE\.md$
 ^\.httr-oauth$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^\.github$
