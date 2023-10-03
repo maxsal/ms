@@ -87,7 +87,11 @@
     }
 
     if (evalue == TRUE) {
-        rare <- sum(mod$data[[exposure]], na.rm = TRUE) / nrow(mod$data)
+        if (class(mod) == "logistf") {
+            rare <- sum(as.data.table(mod$model[[exposure]], na.rm = TRUE)) / nrow(mod$model)
+        } else {
+            rare <- sum(mod$data[[exposure]], na.rm = TRUE) / nrow(mod$data)
+        }
         eval <- suppressMessages(evalues.OR(est = exp(est[[1]]), lo = exp(est[[1]] - stats::qnorm(0.975) * est[[2]]), hi = exp(est[[1]] + stats::qnorm(0.975) * est[[2]]), rare = ifelse(rare >= 0.15, FALSE, TRUE)))
         out[, `:=`(
             or         = exp(est[[1]]),
