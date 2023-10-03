@@ -88,7 +88,7 @@
 
     if (evalue == TRUE) {
         if (class(mod) == "logistf") {
-            rare <- sum(as.data.table(mod$model[[exposure]], na.rm = TRUE)) / nrow(mod$model)
+            rare <- sum(as.data.table(mod$model)[[exposure]], na.rm = TRUE) / nrow(mod$model)
         } else {
             rare <- sum(mod$data[[exposure]], na.rm = TRUE) / nrow(mod$data)
         }
