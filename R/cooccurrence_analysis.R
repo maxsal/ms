@@ -160,7 +160,7 @@ cooccurrence_analysis <- function(
     possible_exposures <- names(data2)[names(data2) %in% possible_exposures]
         # check for non-0/1 variables
         if (!any(as.matrix(data2[, ..possible_exposures]) %in% c(0, 1))) {
-            cli_alert("Non-indicator variables detected. Assuming these are standardized indicator variables. Stop if this is not the case.")
+            if (verbose) cli_alert("Non-indicator variables detected. Assuming these are standardized indicator variables. Stop if this is not the case.")
         }
     exposures_to_consider <- data.table::melt(
         data2[, ..possible_exposures][, lapply(.SD, \(x) sum(x == max(x, na.rm = TRUE), na.rm = TRUE))],
