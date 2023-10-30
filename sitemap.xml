@@ -46,6 +46,9 @@
     <loc>https://maxsal.github.io/ms/reference/dot-quick_cooccur_mod.html</loc>
   </url>
   <url>
+    <loc>https://maxsal.github.io/ms/reference/dot-scale_manual.html</loc>
+  </url>
+  <url>
     <loc>https://maxsal.github.io/ms/reference/dot-weighted_partial_correlation.html</loc>
   </url>
   <url>
@@ -107,6 +110,9 @@
   </url>
   <url>
     <loc>https://maxsal.github.io/ms/reference/scale_fill_ms.html</loc>
+  </url>
+  <url>
+    <loc>https://maxsal.github.io/ms/reference/standardize_variables.html</loc>
   </url>
   <url>
     <loc>https://maxsal.github.io/ms/reference/theme_ms.html</loc>
