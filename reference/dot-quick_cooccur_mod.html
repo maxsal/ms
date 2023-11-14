@@ -53,7 +53,9 @@
 <span>  weight_var <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  weight_dsn <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  evalue <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  check_separation <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  logistf_pl <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  check_separation <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  detect_separation <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -87,8 +89,16 @@
 <dd><p>logical; calculate evalues (default = TRUE)</p></dd>
 
 
+<dt>logistf_pl</dt>
+<dd><p>logical; use profile likelihood (TRUE) for confidence intervals and tests or Wald (FALSE) in logistf; (default = TRUE)</p></dd>
+
+
 <dt>check_separation</dt>
 <dd><p>logical; check for separation (default = TRUE)</p></dd>
+
+
+<dt>detect_separation</dt>
+<dd><p>logical; use detect_separation (TRUE) or skip and use logistf regardless (FALSE); (default = TRUE)</p></dd>
 
 </dl></div>
     <div class="section level2">

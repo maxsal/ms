@@ -48,14 +48,16 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">cooccurrence_analysis</span><span class="op">(</span></span>
 <span>  <span class="va">data</span>,</span>
 <span>  <span class="va">covariates</span>,</span>
-<span>  possible_exposures <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"X"</span>, <span class="fu">ms</span><span class="fu">::</span><span class="va"><a href="pheinfo.html">pheinfo</a></span><span class="op">[</span>, <span class="va">phecode</span><span class="op">]</span><span class="op">)</span>,</span>
+<span>  possible_exposures <span class="op">=</span> <span class="fu">ms</span><span class="fu">::</span><span class="va"><a href="pheinfox.html">pheinfox</a></span><span class="op">[</span>, <span class="va">phecode</span><span class="op">]</span>,</span>
 <span>  weight_var <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  n_cores <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  parallel <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  min_case_count <span class="op">=</span> <span class="fl">20</span>,</span>
 <span>  min_overlap_count <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>  evalue <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  logistf_pl <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  detect_separation <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -99,6 +101,14 @@
 
 <dt>verbose</dt>
 <dd><p>logical; print notes (default = FALSE)</p></dd>
+
+
+<dt>logistf_pl</dt>
+<dd><p>logical; use profile likelihood (TRUE) for confidence intervals and tests or Wald (FALSE) in logistf; (default = TRUE)</p></dd>
+
+
+<dt>detect_separation</dt>
+<dd><p>logical; use detect_separation (TRUE) or skip and use logistf regardless (FALSE); (default = TRUE)</p></dd>
 
 </dl></div>
     <div class="section level2">
