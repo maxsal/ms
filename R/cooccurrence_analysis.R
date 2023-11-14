@@ -6,7 +6,9 @@
 #' @param weight_var weight variable name
 #' @param weight_dsn survey design object
 #' @param evalue logical; calculate evalues (default = TRUE)
+#' @param logistf_pl logical; use profile likelihood (TRUE) for confidence intervals and tests or Wald (FALSE) in logistf; (default = TRUE)
 #' @param check_separation logical; check for separation (default = TRUE)
+#' @param detect_separation logical; use detect_separation (TRUE) or skip and use logistf regardless (FALSE); (default = TRUE)
 #' @importFrom survey svyglm
 #' @importFrom stats glm
 #' @importFrom stats as.formula
@@ -22,34 +24,44 @@
 #' @return data.table with results from cooccurrence analysis
 .quick_cooccur_mod <- function(
     data,
-    covariates       = c("age_at_threshold", "female", "length_followup"),
-    outcome          = "case",
-    exposure         = "X157",
-    weight_var       = NULL,
-    weight_dsn       = NULL,
-    evalue           = TRUE,
-    check_separation = TRUE
+    covariates        = c("age_at_threshold", "female", "length_followup"),
+    outcome           = "case",
+    exposure          = "X157",
+    weight_var        = NULL,
+    weight_dsn        = NULL,
+    evalue            = TRUE,
+    logistf_pl        = TRUE,
+    check_separation  = TRUE,
+    detect_separation = TRUE
 ) {
 
     if (check_separation) {
-        sep_check <- glm(paste0(outcome, " ~ ", exposure, " + ", paste0(covariates, collapse = " + ")), data = data, family = stats::binomial(), method = "detect_separation")
-        sep_check <- is.infinite(sep_check$coefficients[exposure])
+        if (detect_separation == TRUE) {
+            sep_check <- glm(paste0(outcome, " ~ ", exposure, " + ", paste0(covariates, collapse = " + ")), data = data, family = stats::binomial(), method = "detect_separation")
+            sep_check <- is.infinite(sep_check$coefficients[exposure])
+        } else {
+            sep_check <- TRUE
+        }
     } else {
         sep_check <- FALSE
     }
 
+    f <- stats::as.formula(paste0(outcome, " ~ ", exposure, " + ", paste0(covariates, collapse = " + ")))
+
     if (sep_check) {
         if (is.null(weight_var)) {
             mod <- logistf::logistf(
-                stats::as.formula(paste0(outcome, " ~ ", exposure, " + ", paste0(covariates, collapse = " + "))),
-                data = data
+                f,
+                data = data,
+                pl = logistf_pl
             )
         } else {
-            wgt_ind <- which(!is.na(data[[weight_var]]))
+            weight_index <- which(!is.na(data[[weight_var]]))
             mod <- logistf::logistf(
-                stats::as.formula(paste0(outcome, " ~ ", exposure, " + ", paste0(covariates, collapse = " + "))),
-                data = data[wgt_ind, ],
-                weights = data[wgt_ind, ][[weight_var]]
+                f,
+                data    = data[weight_index, ],
+                pl      = logistf_pl,
+                weights = data[weight_index, ][[weight_var]]
             )
         }
         logor <- stats::coefficients(mod)[[exposure]]
@@ -67,12 +79,12 @@
     } else {
         if (!is.null(weight_dsn)) {
             mod <- survey::svyglm(
-                stats::as.formula(paste0(outcome, " ~ ", exposure, " + ", paste0(covariates, collapse = " + "))),
+                f,
                 design = weight_dsn,
                 family = stats::quasibinomial()
             )
         } else {
-            mod <- glm(paste0(outcome, " ~ ", exposure, " + ", paste0(covariates, collapse = " + ")), data = data, family = quasibinomial())
+            mod <- glm(f, data = data, family = quasibinomial())
         }
 
         est <- summary(mod)$coef[exposure, c(1, 2)]
@@ -117,6 +129,8 @@
 #' @param min_overlap_count minimum number of cases with exposure to consider an exposure (default = 5)
 #' @param evalue logical; calculate evalues (default = TRUE)
 #' @param verbose logical; print notes (default = FALSE)
+#' @param logistf_pl logical; use profile likelihood (TRUE) for confidence intervals and tests or Wald (FALSE) in logistf; (default = TRUE)
+#' @param detect_separation logical; use detect_separation (TRUE) or skip and use logistf regardless (FALSE); (default = TRUE)
 #' @return data.table of cooccurrence analysis results
 #' @importFrom data.table melt
 #' @importFrom data.table data.table
@@ -142,14 +156,16 @@
 cooccurrence_analysis <- function(
     data,
     covariates,
-    possible_exposures = paste0("X", ms::pheinfo[, phecode]),
+    possible_exposures = ms::pheinfox[, phecode],
     weight_var         = NULL,
     n_cores            = 1,
     parallel           = FALSE,
     min_case_count     = 20,
     min_overlap_count  = 5,
     evalue             = TRUE,
-    verbose            = FALSE
+    verbose            = FALSE,
+    logistf_pl         = TRUE,
+    detect_separation  = TRUE
 ) {
 
     data2 <- data |>
@@ -213,12 +229,15 @@ cooccurrence_analysis <- function(
         )
         for (i in seq_along(exposures_to_consider)) {
             out[[i]] <- .quick_cooccur_mod(
-                data       = data2,
-                covariates = covariates,
-                exposure   = exposures_to_consider[i],
-                weight_var = weight_var,
-                weight_dsn = weight_design,
-                evalue     = evalue
+                data              = data2,
+                covariates        = covariates,
+                exposure          = exposures_to_consider[i],
+                weight_var        = weight_var,
+                weight_dsn        = weight_design,
+                evalue            = evalue,
+                check_separation  = FALSE,
+                detect_separation = detect_separation,
+                logistf_pl        = logistf_pl
             )
             cli::cli_progress_update()
         }
@@ -231,12 +250,14 @@ cooccurrence_analysis <- function(
             )
             for (i in seq_along(exposures_overlap)) {
                 out2[[i]] <- .quick_cooccur_mod(
-                    data             = data2,
-                    covariates       = covariates,
-                    exposure         = exposures_overlap[i],
-                    weight_var       = weight_var,
-                    evalue           = evalue,
-                    check_separation = TRUE
+                    data              = data2,
+                    covariates        = covariates,
+                    exposure          = exposures_overlap[i],
+                    weight_var        = weight_var,
+                    evalue            = evalue,
+                    check_separation  = TRUE,
+                    detect_separation = detect_separation,
+                    logistf_pl        = logistf_pl
                 )
                 cli::cli_progress_update()
             }
@@ -256,23 +277,27 @@ cooccurrence_analysis <- function(
         cols    <- seq_along(exposures_to_consider)
         output <- foreach::foreach(i = cols, .combine = rbind) %dopar% {
             .quick_cooccur_mod(
-                data             = data2,
-                covariates       = covariates,
-                exposure         = exposures_to_consider[i],
-                weight_dsn       = weight_design,
-                evalue           = evalue,
-                check_separation = FALSE
+                data              = data2,
+                covariates        = covariates,
+                exposure          = exposures_to_consider[i],
+                weight_dsn        = weight_design,
+                evalue            = evalue,
+                check_separation  = FALSE,
+                detect_separation = detect_separation,
+                logistf_pl        = logistf_pl
             )
         }
         if (!is.null(exposures_overlap)) {
             output2 <- foreach::foreach(i = seq_along(exposures_overlap), .combine = rbind) %dopar% {
                 .quick_cooccur_mod(
-                    data             = data2,
-                    covariates       = covariates,
-                    exposure         = exposures_overlap[i],
-                    weight_var       = weight_var,
-                    evalue           = evalue,
-                    check_separation = TRUE
+                    data              = data2,
+                    covariates        = covariates,
+                    exposure          = exposures_overlap[i],
+                    weight_var        = weight_var,
+                    evalue            = evalue,
+                    check_separation  = TRUE,
+                    detect_separation = detect_separation,
+                    logistf_pl        = logistf_pl
                 )
             }
         }

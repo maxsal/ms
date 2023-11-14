@@ -12,7 +12,9 @@
   weight_var = NULL,
   weight_dsn = NULL,
   evalue = TRUE,
-  check_separation = TRUE
+  logistf_pl = TRUE,
+  check_separation = TRUE,
+  detect_separation = TRUE
 )
 }
 \arguments{
@@ -30,7 +32,11 @@
 
 \item{evalue}{logical; calculate evalues (default = TRUE)}
 
+\item{logistf_pl}{logical; use profile likelihood (TRUE) for confidence intervals and tests or Wald (FALSE) in logistf; (default = TRUE)}
+
 \item{check_separation}{logical; check for separation (default = TRUE)}
+
+\item{detect_separation}{logical; use detect_separation (TRUE) or skip and use logistf regardless (FALSE); (default = TRUE)}
 }
 \value{
 data.table with results from cooccurrence analysis

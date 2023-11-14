@@ -7,14 +7,16 @@
 cooccurrence_analysis(
   data,
   covariates,
-  possible_exposures = paste0("X", ms::pheinfo[, phecode]),
+  possible_exposures = ms::pheinfox[, phecode],
   weight_var = NULL,
   n_cores = 1,
   parallel = FALSE,
   min_case_count = 20,
   min_overlap_count = 5,
   evalue = TRUE,
-  verbose = FALSE
+  verbose = FALSE,
+  logistf_pl = TRUE,
+  detect_separation = TRUE
 )
 }
 \arguments{
@@ -37,6 +39,10 @@ cooccurrence_analysis(
 \item{evalue}{logical; calculate evalues (default = TRUE)}
 
 \item{verbose}{logical; print notes (default = FALSE)}
+
+\item{logistf_pl}{logical; use profile likelihood (TRUE) for confidence intervals and tests or Wald (FALSE) in logistf; (default = TRUE)}
+
+\item{detect_separation}{logical; use detect_separation (TRUE) or skip and use logistf regardless (FALSE); (default = TRUE)}
 }
 \value{
 data.table of cooccurrence analysis results
