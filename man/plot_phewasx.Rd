@@ -15,7 +15,8 @@ plot_phewasx(
   group_space = 20,
   label_top = 5,
   title = NULL,
-  genetic_offset = 15
+  genetic_offset = 15,
+  color_dot_pt = 15
 )
 }
 \arguments{
@@ -40,6 +41,8 @@ plot_phewasx(
 \item{title}{title of plot}
 
 \item{genetic_offset}{offset for genetic phecodes}
+
+\item{color_dot_pt}{size of color dots}
 }
 \value{
 a Manhattan plot of PheWAS results

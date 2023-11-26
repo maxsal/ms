@@ -10,6 +10,7 @@
 #' @param label_top number of top phecodes to label
 #' @param title title of plot
 #' @param genetic_offset offset for genetic phecodes
+#' @param color_dot_pt size of color dots
 #' @return a Manhattan plot of PheWAS results
 #' @importFrom ggplot2 ggplot
 #' @importFrom ggplot2 geom_point
@@ -44,7 +45,8 @@ plot_phewasx <- function(
     group_space     = 20,
     label_top       = 5,
     title           = NULL,
-    genetic_offset  = 15
+    genetic_offset  = 15,
+    color_dot_pt    = 15
 ) {
     # initialize
     pheinfox <- data.table::copy(ms::pheinfox)
@@ -97,9 +99,8 @@ plot_phewasx <- function(
         ggplot2::scale_x_continuous(
             breaks = plot_data_mean[, mean],
             labels = paste0(
-                "<span style=\"color: ", plot_data_mean[, color], "\">",
-                plot_data_mean[, group],
-                "</span>"
+                "<span style=\"color: ", plot_data_mean[, color], "\"><span style=\"font-size: ", color_dot_pt, "pt\">\u25CF</span></span>",
+                plot_data_mean[, group]
             )
         ) +
         ggplot2::labs(
