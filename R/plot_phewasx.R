@@ -11,6 +11,7 @@
 #' @param title title of plot
 #' @param genetic_offset offset for genetic phecodes
 #' @param color_dot_pt size of color dots
+#' @param color_dot_symbol symbol for color dots
 #' @return a Manhattan plot of PheWAS results
 #' @importFrom ggplot2 ggplot
 #' @importFrom ggplot2 geom_point
@@ -36,27 +37,29 @@
 
 plot_phewasx <- function(
     data,
-    beta_var        = "beta",
-    log10p_var      = "log10p",
-    color_var       = "color",
-    phe_var         = "exposure",
-    threshold_color = "red",
-    order_reset     = TRUE,
-    group_space     = 20,
-    label_top       = 5,
-    title           = NULL,
-    genetic_offset  = 15,
-    color_dot_pt    = 15
+    beta_var         = "beta",
+    log10p_var       = "log10p",
+    color_var        = "color",
+    phe_var          = "exposure",
+    threshold_color  = "red",
+    order_reset      = TRUE,
+    group_space      = 20,
+    label_top        = 5,
+    title            = NULL,
+    genetic_offset   = 15,
+    color_dot_pt     = 15,
+    color_dot_symbol = "\u25CF"
 ) {
     # initialize
     pheinfox <- data.table::copy(ms::pheinfox)
 
     # prep
     if (!is.data.table(data)) data <- data.table::as.data.table(data)
-    if (beta_var %in% names(data)) {
-        phewas <- data[, direction := data.table::fifelse(get(beta_var) > 0, "Positive", "Negative")]
+    data2 <- data.table::copy(data)
+    if (beta_var %in% names(data2)) {
+        phewas <- data2[, direction := data.table::fifelse(get(beta_var) > 0, "Positive", "Negative")]
     } else {
-        phewas <- data[, direction := "None"]
+        phewas <- data2[, direction := "None"]
     }
 
     plot_data <- merge.data.table(
@@ -96,13 +99,23 @@ plot_phewasx <- function(
         ggplot2::ggplot(aes(x = order, y = -get(log10p_var), fill = group, color = group)) +
         ggplot2::geom_point(ggplot2::aes(shape = direction), size = 2, alpha = 0.5, show.legend = FALSE) +
         ggplot2::geom_hline(yintercept = -log10(0.05 / phewas[!is.na(get(log10p_var)), .N]), linewidth = 1, linetype = "dashed", color = threshold_color) +
-        ggplot2::scale_x_continuous(
-            breaks = plot_data_mean[, mean],
-            labels = paste0(
-                "<span style=\"color: ", plot_data_mean[, color], "\"><span style=\"font-size: ", color_dot_pt, "pt\">\u25CF</span></span>",
-                plot_data_mean[, group]
-            )
-        ) +
+        (\() if (!is.null(color_dot_symbol)) {
+                ggplot2::scale_x_continuous(
+                    breaks = plot_data_mean[, mean],
+                    labels = paste0(
+                        "<span style=\"color: ", plot_data_mean[, color], "\"><span style=\"font-size: ", color_dot_pt, "pt\">", color_dot_symbol, "</span></span> ",
+                        plot_data_mean[, group]
+                    )
+                )
+        } else {
+                ggplot2::scale_x_continuous(
+                    breaks = plot_data_mean[, mean],
+                    labels = paste0(
+                        "<span style=\"color: ", plot_data_mean[, color], "\">",
+                        plot_data_mean[, group], "</span>"
+                    )
+                )
+        })() +
         ggplot2::labs(
             x = "",
             y = "-log10(p-value)"
@@ -113,7 +126,7 @@ plot_phewasx <- function(
         ggplot2::scale_shape_manual(values = c("Positive" = 24, "Negative" = 25, "None" = 19)) +
         ms::theme_ms(show_grid_lines = FALSE) +
         ggplot2::theme(
-            axis.text.x = ggtext::element_markdown(angle = 45, hjust = 1)
+            axis.text.x = ggtext::element_markdown(angle = -45, hjust = 0)
         )
 
     if (!is.null(label_top)) {
