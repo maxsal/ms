@@ -232,11 +232,11 @@ map_phewas <- function(
   logistf_pl = FALSE, .weight_var = NULL, workers = 1,
   plan_strategy = future::multicore
 ) {
-  if (is.null(options(future.globals.maxSize)[[1]])) {
+  if (is.null(options("future.globals.maxSize")[[1]])) {
     if (object.size(data) > (450*1024^2)) {
         options(future.globals.maxSize = object.size(data) + 50 * 1024^2)
     }
-  } else if (options(future.globals.maxSize)[[1]] < object.size(data) + 50 * 1024^2) {
+  } else if (options("future.globals.maxSize")[[1]] < object.size(data) + 50 * 1024^2) {
     options(future.globals.maxSize = object.size(data) + 50 * 1024^2)
   }
 
