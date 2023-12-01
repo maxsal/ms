@@ -192,6 +192,7 @@ weighted_analysis <- function(data, design, outcome, exposure, covariates, metho
 #' @param logistf_pl whether to use profile likelihood in logistf
 #' @param .weight_var name of weight variable
 #' @return list of results from model for the exposure
+#' @export
 phewas_analysis <- function(data = NULL, design = NULL, outcome, exposure, covariates, method, logistf_pl = FALSE, .weight_var = NULL) {
   switch(
     method,
@@ -224,6 +225,7 @@ phewas_analysis <- function(data = NULL, design = NULL, outcome, exposure, covar
 #' @importFrom dplyr mutate
 #' @importFrom dplyr case_when
 #' @return return table of results from model for the exposures
+#' @export
 map_phewas <- function(
   data = NULL, design = NULL, outcome, exposures, covariates, method,
   logistf_pl = FALSE, .weight_var = NULL, workers = 1,
