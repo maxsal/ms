@@ -12,6 +12,7 @@
 #' @param genetic_offset offset for genetic phecodes
 #' @param color_dot_pt size of color dots
 #' @param color_dot_symbol symbol for color dots
+#' @param label_size size of labels
 #' @return a Manhattan plot of PheWAS results
 #' @importFrom ggplot2 ggplot
 #' @importFrom ggplot2 geom_point
@@ -48,7 +49,8 @@ plot_phewasx <- function(
     title            = NULL,
     genetic_offset   = 15,
     color_dot_pt     = 15,
-    color_dot_symbol = "\u25CF"
+    color_dot_symbol = "\u25CF",
+    label_size       = 3
 ) {
     # initialize
     pheinfox <- data.table::copy(ms::pheinfox)
@@ -137,7 +139,9 @@ plot_phewasx <- function(
                 color = "black",
                 show.legend = FALSE,
                 inherit.aes = FALSE,
-                max.time = 3, max.iter = 100000
+                size        = label_size,
+                max.time    = 3,
+                max.iter    = 100000
             )
     }
 
