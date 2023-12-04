@@ -2,13 +2,21 @@
 #' @param internal_data data.table of internal data
 #' @param external_data data.table of external data
 #' @param select_vars vector of variables to select
+#' @param weight_outcome_var variable name for weight outcome
+#' @param samp_var variable name for sampling indicator
+#' @param external_dataset name of external dataset
+#' @param dataset_name name of internal dataset
 #' @param id_var name of id variable
 #' @param internal_var name of internal dataset indicator variable
+#' @param cancer_factor whether to use a cancer factor
 #' @param ncores number of cores to use
 #' @param folds number of folds to use
 #' @importFrom data.table rbindlist
 #' @importFrom data.table copy
 #' @importFrom parallelly availableCores
+#' @importFrom glmnet cv.glmnet
+#' @importFrom glmnet glmnet
+#' @importFrom doParallel registerDoParallel
 #' @return return table of results from model for the exposures
 #' @export
 

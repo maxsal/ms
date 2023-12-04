@@ -7,5 +7,7 @@ utils::globalVariables(c(
   "labs", "scale_color_manual", "scale_fill_manual",
   "scale_shape_manual", "scale_x_continuous", "theme",
   "geom_hline", "..covariates", "p_value", "future.globals.maxSize",
-  "object.size"
+  "object.size", "dataset", "predict", "age", "..covs", "pop_prob",
+  "..sub_vars", "ps_weight", "int_prob", "..return_vars", "ip_weight",
+  "model.matrix", "..select_vars"
 ))

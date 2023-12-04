@@ -14,7 +14,7 @@
 #' @importFrom cli cli_alert_info
 #' @importFrom data.table copy
 #' @importFrom data.table setnames
-#' @importFrom data.table merge
+#' @importFrom data.table merge.data.table
 #' @return return data.table with id and poststratification weights
 #' @export
 

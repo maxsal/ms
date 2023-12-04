@@ -32,7 +32,10 @@ Imports:
     SPAtest,
     brglm2,
     furrr,
-    future
+    future,
+    parallelly,
+    simplexreg,
+    glmnet
 RoxygenNote: 7.2.3
 Depends: 
     R (>= 2.10)
