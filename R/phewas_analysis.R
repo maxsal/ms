@@ -103,9 +103,9 @@ logistf_analysis <- function(data, outcome, exposure, covariates = NULL, logistf
   if (!is.null(weight_var)) {
     fit     <- logistf(
       formula,
-      data    = data |> dplyr::filter(!is.na({{ weight_var }})),
+      data    = data[!is.na(get(weight_var)), ],
       pl      = logistf_pl,
-      weights = data |> dplyr::filter(!is.na({{ weight_var }})) |> dplyr::pull({{ weight_var }}),
+      weights = data[!is.na(get(weight_var)), ][[weight_var]],
       control = logistf::logistf.control(maxit = 1000, maxstep = 0.5))
     method_out <- "wlogistf"
   } else {
