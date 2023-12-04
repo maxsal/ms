@@ -111,13 +111,6 @@ logistf_analysis <- function(dataset, outcome, exposure, covariates = NULL, logi
         control = logistf::logistf.control(maxit = 1000, maxstep = 0.5)
       )
     )
-    
-    # logistf::logistf(
-    #   formula = formula,
-    #   data    = tmp_data,
-    #   pl      = logistf_pl,
-    #   weights = tmp_data[[weight_var]],
-    #   control = logistf::logistf.control(maxit = 1000, maxstep = 0.5))
     method_out <- "wlogistf"
   } else {
     fit     <- logistf::logistf(formula, data = dataset, pl = logistf_pl,
