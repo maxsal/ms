@@ -72,11 +72,12 @@ psw <- function(
   population_proportions[, (num_vars) := lapply(.SD, as.numeric), .SDcols = num_vars]
 
   # 3. get internal proportions -----------------------------------------------
+  internal_data <- data.table::copy(int_data)
   if (age_bin == TRUE) {
-    int_data[, age_bin := cut(get(age_var), age_bin_breaks, right = FALSE)]
+    internal_data[, age_bin := cut(get(age_var), age_bin_breaks, right = FALSE)]
   }
 
-  internal_probabilities <- int_data[, ..covs] |>
+  internal_probabilities <- internal_data[, ..covs] |>
     table() |>
     prop.table() |>
     data.table::as.data.table()
@@ -89,7 +90,7 @@ psw <- function(
   min_pop_prob <- min(population_proportions[, pop_prob][which(population_proportions[, pop_prob] > 0)])
   population_proportions[pop_prob == 0, pop_prob := min_pop_prob]
 
-  merged <- int_data[, ..sub_vars] |>
+  merged <- internal_data[, ..sub_vars] |>
     data.table::merge.data.table(population_proportions, by = covs) |>
     data.table::merge.data.table(internal_probabilities, by = covs)
   merged[, ps_weight := pop_prob / int_prob]
