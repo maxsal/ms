@@ -98,18 +98,29 @@ brglm2_analysis <- function(data, outcome, exposure, covariates = NULL, weight_v
 #' @importFrom logistf logistf
 #' @importFrom logistf logistf.control
 #' @return list of results from model for the exposure
-logistf_analysis <- function(data, outcome, exposure, covariates = NULL, logistf_pl = FALSE, weight_var = NULL) {
+logistf_analysis <- function(dataset, outcome, exposure, covariates = NULL, logistf_pl = FALSE, weight_var = NULL) {
   formula <- create_formula(outcome, exposure, covariates)
   if (!is.null(weight_var)) {
-    fit     <- logistf(
-      formula,
-      data    = data[!is.na(get(weight_var)), ],
-      pl      = logistf_pl,
-      weights = data[!is.na(get(weight_var)), ][[weight_var]],
-      control = logistf::logistf.control(maxit = 1000, maxstep = 0.5))
+    fit     <- do.call(
+      logistf::logistf,
+      list(
+        formula = formula,
+        data    = dataset[!is.na(dataset[[weight_var]]), ],
+        pl      = logistf_pl,
+        weights = dataset[!is.na(dataset[[weight_var]]), ][[weight_var]],
+        control = logistf::logistf.control(maxit = 1000, maxstep = 0.5)
+      )
+    )
+    
+    # logistf::logistf(
+    #   formula = formula,
+    #   data    = tmp_data,
+    #   pl      = logistf_pl,
+    #   weights = tmp_data[[weight_var]],
+    #   control = logistf::logistf.control(maxit = 1000, maxstep = 0.5))
     method_out <- "wlogistf"
   } else {
-    fit     <- logistf::logistf(formula, data = data, pl = logistf_pl,
+    fit     <- logistf::logistf(formula, data = dataset, pl = logistf_pl,
                        control = logistf::logistf.control(maxit = 1000, maxstep = 0.5))
     method_out <- "logistf"
   }
