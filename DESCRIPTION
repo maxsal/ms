@@ -15,7 +15,7 @@ Imports:
     showtext,
     sysfonts,
     collapse,
-    data.table,
+    data.table (>= 1.14.9),
     parallel,
     doParallel,
     foreach,
