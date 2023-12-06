@@ -5,19 +5,21 @@
 \title{Conduct a tidy random forest analysis with hyperparameter tuning via tidymodels framework}
 \usage{
 tidy_forest(
-  dataset,
+  data,
   outcome_var,
   drop_vars = NULL,
   split_prop = 0.5,
   num_threads = 6,
   importance = "permutation",
   mode = "classification",
+  num_trees = 500,
   levels = 5,
-  best_metric = "accuracy"
+  best_metric = "accuracy",
+  ...
 )
 }
 \arguments{
-\item{dataset}{A data frame}
+\item{data}{A data frame}
 
 \item{outcome_var}{A string representing outcome variable}
 
@@ -31,9 +33,13 @@ tidy_forest(
 
 \item{mode}{A string representing mode}
 
+\item{num_trees}{A number representing number of trees}
+
 \item{levels}{A number representing number of levels}
 
 \item{best_metric}{A string representing best metric}
+
+\item{...}{Additional arguments to pass to parsnip::rand_forest()}
 }
 \value{
 A list of objects

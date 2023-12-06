@@ -1,13 +1,15 @@
 #' Conduct a tidy random forest analysis with hyperparameter tuning via tidymodels framework
-#' @param dataset A data frame
+#' @param data A data frame
 #' @param outcome_var A string representing outcome variable
 #' @param drop_vars A vector of strings representing variables to drop
 #' @param split_prop A number representing proportion of data to use for training
 #' @param num_threads A number representing number of threads to use
 #' @param importance A string representing importance method
 #' @param mode A string representing mode
+#' @param num_trees A number representing number of trees
 #' @param levels A number representing number of levels
 #' @param best_metric A string representing best metric
+#' @param ... Additional arguments to pass to parsnip::rand_forest()
 #' @return A list of objects
 #' @importFrom rsample initial_split training testing vfold_cv
 #' @importFrom dplyr select mutate
@@ -26,19 +28,21 @@
 #' @export
 
 tidy_forest <- function(
-    dataset,
+    data,
     outcome_var,
     drop_vars   = NULL,
     split_prop  = 0.5,
     num_threads = 6,
     importance  = "permutation",
     mode        = "classification",
+    num_trees   = 500,
     levels      = 5,
-    best_metric = "accuracy"
+    best_metric = "accuracy",
+    ...
 ) {
   
   data_split <- rsample::initial_split(
-    dataset |> dplyr::select(-tidyr::one_of(drop_vars)),
+    data |> dplyr::select(-tidyr::one_of(drop_vars)),
     prop   = split_prop,
     strata = outcome_var
   )
@@ -53,7 +57,9 @@ tidy_forest <- function(
       parsnip::set_engine(
         "ranger",
         num.threads = num_threads,
-        importance  = importance
+        importance  = importance,
+        num.trees   = num_trees,
+        ...
       ) |>
       parsnip::set_mode(mode = mode)
   
