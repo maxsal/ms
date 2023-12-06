@@ -35,7 +35,17 @@ Imports:
     future,
     parallelly,
     simplexreg,
-    glmnet
+    glmnet,
+    tidyr,
+    rsample,
+    parsnip,
+    dials,
+    workflows,
+    tune,
+    yardstick,
+    vip,
+    ranger,
+    hardhat
 RoxygenNote: 7.2.3
 Depends: 
     R (>= 2.10)

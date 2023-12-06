@@ -1,13 +1,3 @@
-# functions for performing a phewas analysis using a variety of methods
-suppressPackageStartupMessages({
-  library(tidyverse)
-  library(furrr)
-  library(survey)
-  library(logistf)
-  library(brglm2)
-  library(SPAtest)
-})
-
 #' Helper: create formula for analysis
 #' @param exposure name of exposure variable
 #' @param outcome name of outcome variable
@@ -98,22 +88,22 @@ brglm2_analysis <- function(data, outcome, exposure, covariates = NULL, weight_v
 #' @importFrom logistf logistf
 #' @importFrom logistf logistf.control
 #' @return list of results from model for the exposure
-logistf_analysis <- function(dataset, outcome, exposure, covariates = NULL, logistf_pl = FALSE, weight_var = NULL) {
+logistf_analysis <- function(data, outcome, exposure, covariates = NULL, logistf_pl = FALSE, weight_var = NULL) {
   formula <- create_formula(outcome, exposure, covariates)
   if (!is.null(weight_var)) {
     fit     <- do.call(
       logistf::logistf,
       list(
         formula = formula,
-        data    = dataset[!is.na(dataset[[weight_var]]), ],
+        data    = data[!is.na(data[[weight_var]]), ],
         pl      = logistf_pl,
-        weights = dataset[!is.na(dataset[[weight_var]]), ][[weight_var]],
+        weights = data[!is.na(data[[weight_var]]), ][[weight_var]],
         control = logistf::logistf.control(maxit = 1000, maxstep = 0.5)
       )
     )
     method_out <- "wlogistf"
   } else {
-    fit     <- logistf::logistf(formula, data = dataset, pl = logistf_pl,
+    fit     <- logistf::logistf(formula, data = data, pl = logistf_pl,
                        control = logistf::logistf.control(maxit = 1000, maxstep = 0.5))
     method_out <- "logistf"
   }
