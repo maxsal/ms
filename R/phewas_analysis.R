@@ -185,21 +185,29 @@ weighted_analysis <- function(data, design, outcome, exposure, covariates, metho
 #' @param method method to use for analysis
 #' @param logistf_pl whether to use profile likelihood in logistf
 #' @param .weight_var name of weight variable
+#' @param verbose whether to print offending exposure
+#' @param show_error whether to show error messages
 #' @return list of results from model for the exposure
 #' @export
-phewas_analysis <- function(data = NULL, design = NULL, outcome, exposure, covariates, method, logistf_pl = FALSE, .weight_var = NULL) {
-  switch(
-    method,
-      "glm"      = glm_analysis(data, outcome, exposure, covariates, weight_var = .weight_var),
-      "brglm2"   = brglm2_analysis(data, outcome, exposure, covariates, weight_var = .weight_var),
-      "logistf"  = logistf_analysis(data, outcome, exposure, covariates, logistf_pl = logistf_pl, weight_var = .weight_var),
-      "SPAtest"  = SPAtest_analysis(data, outcome, exposure, covariates),
-      "svyglm"   = svyglm_analysis(design, outcome, exposure, covariates),
-      "weighted" = weighted_analysis(
-        data = data, design = design, outcome = outcome, exposure = exposure,
-        covariates = covariates, logistf_pl = logistf_pl, weight_var = .weight_var
-      )
-  )
+phewas_analysis <- function(data = NULL, design = NULL, outcome, exposure, covariates, method, logistf_pl = FALSE, .weight_var = NULL, verbose = TRUE, show_error = FALSE) {
+  tryCatch({
+    switch(
+      method,
+        "glm"      = glm_analysis(data, outcome, exposure, covariates, weight_var = .weight_var),
+        "brglm2"   = brglm2_analysis(data, outcome, exposure, covariates, weight_var = .weight_var),
+        "logistf"  = logistf_analysis(data, outcome, exposure, covariates, logistf_pl = logistf_pl, weight_var = .weight_var),
+        "SPAtest"  = SPAtest_analysis(data, outcome, exposure, covariates),
+        "svyglm"   = svyglm_analysis(design, outcome, exposure, covariates),
+        "weighted" = weighted_analysis(
+          data = data, design = design, outcome = outcome, exposure = exposure,
+          covariates = covariates, logistf_pl = logistf_pl, weight_var = .weight_var
+        )
+    )
+  }, error = function(err_msg) {
+      if (verbose) print(paste0("skipping: ", exposure, " [", ms::pheinfox[phecode == exposure, description], "]."))
+      if (show_error) print(err_msg)
+        list(phecode = exposure)
+      })
 }
 
 #' function to map a binary analysis by vector of exposures using a method specified by the method argument
@@ -213,6 +221,7 @@ phewas_analysis <- function(data = NULL, design = NULL, outcome, exposure, covar
 #' @param .weight_var name of weight variable
 #' @param workers number of workers to use for parallelization
 #' @param plan_strategy strategy for parallelization
+#' @param pwide_sig whether to add a column for significant results after p-value correction
 #' @importFrom furrr future_map
 #' @importFrom dplyr bind_rows
 #' @importFrom dplyr arrange
@@ -222,9 +231,17 @@ phewas_analysis <- function(data = NULL, design = NULL, outcome, exposure, covar
 #' @return return table of results from model for the exposures
 #' @export
 map_phewas <- function(
-  data = NULL, design = NULL, outcome, exposures, covariates, method,
-  logistf_pl = FALSE, .weight_var = NULL, workers = 1,
-  plan_strategy = future::multicore
+  data = NULL,
+  design = NULL,
+  outcome,
+  exposures,
+  covariates,
+  method,
+  logistf_pl    = FALSE,
+  .weight_var   = NULL,
+  workers       = 1,
+  plan_strategy = future::multicore,
+  pwide_sig     = TRUE
 ) {
   if (is.null(options("future.globals.maxSize")[[1]])) {
     if (object.size(data) > (450*1024^2)) {
@@ -236,21 +253,31 @@ map_phewas <- function(
 
   future::plan(plan_strategy, workers = workers)
   exposures |>
-    furrr::future_map(
+    furrr::future_map_dfr(
       \(x) {
         phewas_analysis(
-          data = data, design = design, outcome = outcome, exposure = x, covariates = covariates,
-          method = method, logistf_pl = logistf_pl, .weight_var = .weight_var
+          data        = data,
+          design      = design,
+          outcome     = outcome,
+          exposure    = x,
+          covariates  = covariates,
+          method      = method,
+          logistf_pl  = logistf_pl,
+          .weight_var = .weight_var
         )
       },
       .progress = TRUE
     ) |>
-    dplyr::bind_rows() |>
     dplyr::arrange(p_value) |>
-    dplyr::mutate(
-      pwide_sig = dplyr::case_when(
-        p_value < 0.05 / n() ~ 1,
-        TRUE                 ~ 0
+    (\(x) if (pwide_sig) {
+      x |>
+      dplyr::mutate(
+        pwide_sig = dplyr::case_when(
+          p_value < 0.05 / n() ~ 1,
+          TRUE                 ~ 0
+        )
       )
-    )
+    } else {
+      x
+    })()
 }

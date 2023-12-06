@@ -14,7 +14,8 @@ map_phewas(
   logistf_pl = FALSE,
   .weight_var = NULL,
   workers = 1,
-  plan_strategy = future::multicore
+  plan_strategy = future::multicore,
+  pwide_sig = TRUE
 )
 }
 \arguments{
@@ -37,6 +38,8 @@ map_phewas(
 \item{workers}{number of workers to use for parallelization}
 
 \item{plan_strategy}{strategy for parallelization}
+
+\item{pwide_sig}{whether to add a column for significant results after p-value correction}
 }
 \value{
 return table of results from model for the exposures

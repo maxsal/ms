@@ -12,7 +12,9 @@ phewas_analysis(
   covariates,
   method,
   logistf_pl = FALSE,
-  .weight_var = NULL
+  .weight_var = NULL,
+  verbose = TRUE,
+  show_error = FALSE
 )
 }
 \arguments{
@@ -31,6 +33,10 @@ phewas_analysis(
 \item{logistf_pl}{whether to use profile likelihood in logistf}
 
 \item{.weight_var}{name of weight variable}
+
+\item{verbose}{whether to print offending exposure}
+
+\item{show_error}{whether to show error messages}
 }
 \value{
 list of results from model for the exposure
