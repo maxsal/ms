@@ -19,10 +19,25 @@
     <loc>https://maxsal.github.io/ms/news/index.html</loc>
   </url>
   <url>
+    <loc>https://maxsal.github.io/ms/reference/SPAtest_analysis.html</loc>
+  </url>
+  <url>
+    <loc>https://maxsal.github.io/ms/reference/brglm2_analysis.html</loc>
+  </url>
+  <url>
+    <loc>https://maxsal.github.io/ms/reference/chopr.html</loc>
+  </url>
+  <url>
     <loc>https://maxsal.github.io/ms/reference/colon-equals.html</loc>
   </url>
   <url>
     <loc>https://maxsal.github.io/ms/reference/cooccurrence_analysis.html</loc>
+  </url>
+  <url>
+    <loc>https://maxsal.github.io/ms/reference/create_formula.html</loc>
+  </url>
+  <url>
+    <loc>https://maxsal.github.io/ms/reference/crossfit_lasso_weights.html</loc>
   </url>
   <url>
     <loc>https://maxsal.github.io/ms/reference/dot-check_for_deps.html</loc>
@@ -55,6 +70,9 @@
     <loc>https://maxsal.github.io/ms/reference/fcor.html</loc>
   </url>
   <url>
+    <loc>https://maxsal.github.io/ms/reference/glm_analysis.html</loc>
+  </url>
+  <url>
     <loc>https://maxsal.github.io/ms/reference/grapes-dopar-grapes.html</loc>
   </url>
   <url>
@@ -73,7 +91,16 @@
     <loc>https://maxsal.github.io/ms/reference/index.html</loc>
   </url>
   <url>
+    <loc>https://maxsal.github.io/ms/reference/ipw.html</loc>
+  </url>
+  <url>
     <loc>https://maxsal.github.io/ms/reference/libri.html</loc>
+  </url>
+  <url>
+    <loc>https://maxsal.github.io/ms/reference/logistf_analysis.html</loc>
+  </url>
+  <url>
+    <loc>https://maxsal.github.io/ms/reference/map_phewas.html</loc>
   </url>
   <url>
     <loc>https://maxsal.github.io/ms/reference/merge_list.html</loc>
@@ -106,7 +133,13 @@
     <loc>https://maxsal.github.io/ms/reference/pheinfox.html</loc>
   </url>
   <url>
+    <loc>https://maxsal.github.io/ms/reference/phewas_analysis.html</loc>
+  </url>
+  <url>
     <loc>https://maxsal.github.io/ms/reference/plot_phewasx.html</loc>
+  </url>
+  <url>
+    <loc>https://maxsal.github.io/ms/reference/psw.html</loc>
   </url>
   <url>
     <loc>https://maxsal.github.io/ms/reference/scale_color_ms.html</loc>
@@ -118,6 +151,15 @@
     <loc>https://maxsal.github.io/ms/reference/standardize_variables.html</loc>
   </url>
   <url>
+    <loc>https://maxsal.github.io/ms/reference/svyglm_analysis.html</loc>
+  </url>
+  <url>
     <loc>https://maxsal.github.io/ms/reference/theme_ms.html</loc>
+  </url>
+  <url>
+    <loc>https://maxsal.github.io/ms/reference/tidy_forest.html</loc>
+  </url>
+  <url>
+    <loc>https://maxsal.github.io/ms/reference/weighted_analysis.html</loc>
   </url>
 </urlset>
