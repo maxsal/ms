@@ -105,7 +105,7 @@ tidy_forest <- function(
   final_metrics <- final_fit |>
     tune::collect_metrics()
   
-  ref_level <- paste0(".pred_", levels(dataset[[outcome_var]])[1])
+  ref_level <- paste0(".pred_", levels(data[[outcome_var]])[1])
   auc_roc_plot <- final_fit |>
       tune::collect_predictions() |>
       yardstick::roc_curve({{ outcome_var }}, {{ ref_level }}) |>

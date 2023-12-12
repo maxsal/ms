@@ -66,7 +66,7 @@ standardize_variables <- function(data, cols = NULL, all_numeric = FALSE) {
       message(paste0(i, " has only one unique value. skipping for standardization."))
       next
     }
-    data.table::set(x = out, j = i, value = .scale_manual(out[[i]]))
+    data.table::set(x = out, j = i, value = scale(out[[i]]))
   }
 
   return(out[])
