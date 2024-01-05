@@ -243,12 +243,13 @@ map_phewas <- function(
   plan_strategy = future::multicore,
   pwide_sig     = TRUE
 ) {
+  if (is.null(design)) {
+    objects_size <- object.size(data)
+  } else {
+    objects_size <- object.size(data) + object.size(design)
+  }
+  
   if (is.null(options("future.globals.maxSize")[[1]])) {
-    if (is.null(design)) {
-      objects_size <- object.size(data)
-    } else {
-      objects_size <- object.size(data) + object.size(design)
-    }
     if (objects_size > (450*1024^2)) {
         options(future.globals.maxSize = objects_size + 50 * 1024^2)
     }
