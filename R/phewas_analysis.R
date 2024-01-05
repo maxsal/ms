@@ -244,11 +244,16 @@ map_phewas <- function(
   pwide_sig     = TRUE
 ) {
   if (is.null(options("future.globals.maxSize")[[1]])) {
-    if (object.size(data) > (450*1024^2)) {
-        options(future.globals.maxSize = object.size(data) + 50 * 1024^2)
+    if (is.null(design)) {
+      objects_size <- object.size(data)
+    } else {
+      objects_size <- object.size(data) + object.size(design)
     }
-  } else if (options("future.globals.maxSize")[[1]] < object.size(data) + 50 * 1024^2) {
-    options(future.globals.maxSize = object.size(data) + 50 * 1024^2)
+    if (objects_size > (450*1024^2)) {
+        options(future.globals.maxSize = objects_size + 50 * 1024^2)
+    }
+  } else if (options("future.globals.maxSize")[[1]] < objects_size + 50 * 1024^2) {
+    options(future.globals.maxSize = objects_size + 50 * 1024^2)
   }
 
   future::plan(plan_strategy, workers = workers)
