@@ -20,46 +20,58 @@
 #' }
 
 icd_desc <- function(x, code_col = "code", vocab_col = "vocabulary_id", simplify = FALSE, keep_old = NULL) {
-    if (!data.table::is.data.table(x)) x <- data.table::as.data.table(x)
-    if (!any(c("ICD9CM", "ICD10", "ICD10CM") %in% x[[vocab_col]])) {
-        stop("`vocabulary_id` must contain ICD9CM, ICD10, and/or ICD10CM")
-    }
-    out <- data.table::copy(x)
+  # Convert to data.table if not already
+  if (!data.table::is.data.table(x)) x <- data.table::as.data.table(x)
 
-    if ("ICD9CM" %in% unique(x[[vocab_col]])) {
-        tmp9cm <- ms::icd9cm[code %in% out[get(vocab_col) == "ICD9CM", get(code_col)], .(code, vocabulary_id, description)]
-    }
+  # Check for valid vocabulary values
+  vocab_types <- unique(x[[vocab_col]])
+  if (!any(c("ICD9CM", "ICD10", "ICD10CM") %in% vocab_types)) {
+    stop("`vocabulary_id` must contain ICD9CM, ICD10, and/or ICD10CM")
+  }
 
-    if ("ICD10" %in% unique(x[[vocab_col]])) {
-        tmp10 <- ms::icd10[code %in% out[get(vocab_col) == "ICD10", get(code_col)], .(code, vocabulary_id, description)]
-    }
+  # Fetch descriptions from the appropriate tables based on unique vocab types
+  tables_to_merge <- list()
 
-    if ("ICD10CM" %in% unique(x[[vocab_col]])) {
-        tmp10cm <- ms::icd10cm[code %in% out[get(vocab_col) == "ICD10CM", get(code_col)], .(code, vocabulary_id, description)]
-    }
+  if ("ICD9CM" %in% vocab_types) {
+    tables_to_merge[["ICD9CM"]] <- ms::icd9cm[
+      code %in% x[get(vocab_col) == "ICD9CM", get(code_col)],
+      .(code, vocabulary_id, description)
+    ]
+  }
+  if ("ICD10" %in% vocab_types) {
+    tables_to_merge[["ICD10"]] <- ms::icd10[
+      code %in% x[get(vocab_col) == "ICD10", get(code_col)],
+      .(code, vocabulary_id, description)
+    ]
+  }
+  if ("ICD10CM" %in% vocab_types) {
+    tables_to_merge[["ICD10CM"]] <- ms::icd10cm[
+      code %in% x[get(vocab_col) == "ICD10CM", get(code_col)],
+      .(code, vocabulary_id, description)
+    ]
+  }
 
-    for (i in c("tmp9cm", "tmp10", "tmp10cm")) {
-        if (!exists(i)) next
-        if (!exists("tmp")) {
-            tmp <- get(i)
-        } else {
-            tmp <- rbind(tmp, get(i))
-        }
-    }
+  # Combine all fetched description tables
+  tmp <- data.table::rbindlist(tables_to_merge, use.names = TRUE, fill = TRUE)
 
-    out <- merge.data.table(
-        out,
-        tmp,
-        by.x = c(code_col, vocab_col),
-        by.y = c("code", "vocabulary_id"),
-        all.x = TRUE
-    )
+  # Merge the descriptions back with the original data
+  out <- data.table::merge.data.table(
+    x,
+    tmp,
+    by.x = c(code_col, vocab_col),
+    by.y = c("code", "vocabulary_id"),
+    all.x = TRUE
+  )
 
-    if (simplify) {
-        keep <- c(code_col, vocab_col, "description")
-        if (!is.null(keep_old)) keep <- c(keep, keep_old)
-        out <- out[, ..keep]
-    }
-    data.table::setcolorder(out, c(code_col, vocab_col, "description"))
-    return(out)
+  # Simplify columns if requested
+  if (simplify) {
+    keep <- c(code_col, vocab_col, "description")
+    if (!is.null(keep_old)) keep <- c(keep, keep_old)
+    out <- out[, ..keep]
+  }
+
+  # Set column order
+  data.table::setcolorder(out, c(code_col, vocab_col, "description"))
+
+  return(out)
 }

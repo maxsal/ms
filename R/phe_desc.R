@@ -17,29 +17,41 @@
 #' }
 
 phe_desc <- function(x, phe_col = "phecode", simplify = FALSE, group = TRUE, keep_old = NULL) {
-    if (!data.table::is.data.table(x)) x <- data.table::as.data.table(x)
-    if (group) {
-        vars <- c("phecode", "description", "group")
-    } else {
-        vars <- c("phecode", "description")
-    }
-    pheinfo_tmp <- copy(ms::pheinfo)
-    if (startsWith(x[[phe_col]][1], "X")) {
-        pheinfo_tmp[, phecode := paste0("X", phecode)]
-    } else if (is.numeric(x[[phe_col]])) {
-        stop("`phe_col` must be a character column")
-    }
-    out <- data.table::merge.data.table(
-        x,
-        pheinfo_tmp[, ..vars],
-        by.x = phe_col,
-        by.y = "phecode"
-    )
-    if (simplify) {
-        keep <- c(phe_col, setdiff(vars, "phecode"))
-        if (!is.null(keep_old)) keep <- c(keep, keep_old)
-        out <- out[, ..keep]
-    }
-    data.table::setcolorder(out, c(phe_col, "description"))
-    return(out)
+  # Convert to data.table if not already
+  if (!data.table::is.data.table(x)) x <- data.table::as.data.table(x)
+
+  # Select required columns
+  vars <- c("phecode", "description")
+  if (group) vars <- c(vars, "group")
+
+  # Check the phe_col type and adjust phecode format if needed
+  pheinfo_tmp <- ms::pheinfo[, ..vars]
+
+  if (all(startsWith(x[[phe_col]], "X"))) {
+    pheinfo_tmp[, phecode := paste0("X", phecode)]
+  } else if (is.numeric(x[[phe_col]])) {
+    stop("`phe_col` must be a character column")
+  }
+
+  # Merge with pheinfo data by phecode
+  out <- data.table::merge.data.table(
+    x,
+    pheinfo_tmp,
+    by.x = phe_col,
+    by.y = "phecode",
+    all.x = TRUE
+  )
+
+  # Conditionally simplify the output
+  if (simplify) {
+    keep <- c(phe_col, "description")
+    if (group) keep <- c(keep, "group")
+    if (!is.null(keep_old)) keep <- c(keep, keep_old)
+    out <- out[, ..keep]
+  }
+
+  # Set final column order
+  data.table::setcolorder(out, c(phe_col, "description"))
+
+  return(out)
 }
