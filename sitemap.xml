@@ -1,168 +1,58 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://maxsal.github.io/ms/404.html</loc>
-  </url>
-  <url>
-    <loc>https://maxsal.github.io/ms/LICENSE-text.html</loc>
-  </url>
-  <url>
-    <loc>https://maxsal.github.io/ms/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>https://maxsal.github.io/ms/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://maxsal.github.io/ms/index.html</loc>
-  </url>
-  <url>
-    <loc>https://maxsal.github.io/ms/news/index.html</loc>
-  </url>
-  <url>
-    <loc>https://maxsal.github.io/ms/reference/SPAtest_analysis.html</loc>
-  </url>
-  <url>
-    <loc>https://maxsal.github.io/ms/reference/brglm2_analysis.html</loc>
-  </url>
-  <url>
-    <loc>https://maxsal.github.io/ms/reference/chopr.html</loc>
-  </url>
-  <url>
-    <loc>https://maxsal.github.io/ms/reference/colon-equals.html</loc>
-  </url>
-  <url>
-    <loc>https://maxsal.github.io/ms/reference/cooccurrence_analysis.html</loc>
-  </url>
-  <url>
-    <loc>https://maxsal.github.io/ms/reference/create_formula.html</loc>
-  </url>
-  <url>
-    <loc>https://maxsal.github.io/ms/reference/crossfit_lasso_weights.html</loc>
-  </url>
-  <url>
-    <loc>https://maxsal.github.io/ms/reference/data0.html</loc>
-  </url>
-  <url>
-    <loc>https://maxsal.github.io/ms/reference/dot-check_for_deps.html</loc>
-  </url>
-  <url>
-    <loc>https://maxsal.github.io/ms/reference/dot-check_library_loaded.html</loc>
-  </url>
-  <url>
-    <loc>https://maxsal.github.io/ms/reference/dot-check_package_installed.html</loc>
-  </url>
-  <url>
-    <loc>https://maxsal.github.io/ms/reference/dot-correlation.html</loc>
-  </url>
-  <url>
-    <loc>https://maxsal.github.io/ms/reference/dot-onAttach.html</loc>
-  </url>
-  <url>
-    <loc>https://maxsal.github.io/ms/reference/dot-partial_correlation.html</loc>
-  </url>
-  <url>
-    <loc>https://maxsal.github.io/ms/reference/dot-quick_cooccur_mod.html</loc>
-  </url>
-  <url>
-    <loc>https://maxsal.github.io/ms/reference/dot-scale_manual.html</loc>
-  </url>
-  <url>
-    <loc>https://maxsal.github.io/ms/reference/dot-weighted_partial_correlation.html</loc>
-  </url>
-  <url>
-    <loc>https://maxsal.github.io/ms/reference/fcor.html</loc>
-  </url>
-  <url>
-    <loc>https://maxsal.github.io/ms/reference/glm_analysis.html</loc>
-  </url>
-  <url>
-    <loc>https://maxsal.github.io/ms/reference/grapes-dopar-grapes.html</loc>
-  </url>
-  <url>
-    <loc>https://maxsal.github.io/ms/reference/icd10.html</loc>
-  </url>
-  <url>
-    <loc>https://maxsal.github.io/ms/reference/icd10cm.html</loc>
-  </url>
-  <url>
-    <loc>https://maxsal.github.io/ms/reference/icd9cm.html</loc>
-  </url>
-  <url>
-    <loc>https://maxsal.github.io/ms/reference/icd_desc.html</loc>
-  </url>
-  <url>
-    <loc>https://maxsal.github.io/ms/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://maxsal.github.io/ms/reference/ipw.html</loc>
-  </url>
-  <url>
-    <loc>https://maxsal.github.io/ms/reference/libri.html</loc>
-  </url>
-  <url>
-    <loc>https://maxsal.github.io/ms/reference/logistf_analysis.html</loc>
-  </url>
-  <url>
-    <loc>https://maxsal.github.io/ms/reference/map_phewas.html</loc>
-  </url>
-  <url>
-    <loc>https://maxsal.github.io/ms/reference/merge_list.html</loc>
-  </url>
-  <url>
-    <loc>https://maxsal.github.io/ms/reference/pbfor.html</loc>
-  </url>
-  <url>
-    <loc>https://maxsal.github.io/ms/reference/phe_desc.html</loc>
-  </url>
-  <url>
-    <loc>https://maxsal.github.io/ms/reference/phecodex_icd_map.html</loc>
-  </url>
-  <url>
-    <loc>https://maxsal.github.io/ms/reference/phecodex_icdcm_map.html</loc>
-  </url>
-  <url>
-    <loc>https://maxsal.github.io/ms/reference/phecodex_labels.html</loc>
-  </url>
-  <url>
-    <loc>https://maxsal.github.io/ms/reference/phecodex_rollup.html</loc>
-  </url>
-  <url>
-    <loc>https://maxsal.github.io/ms/reference/phecodex_sex.html</loc>
-  </url>
-  <url>
-    <loc>https://maxsal.github.io/ms/reference/pheinfo.html</loc>
-  </url>
-  <url>
-    <loc>https://maxsal.github.io/ms/reference/pheinfox.html</loc>
-  </url>
-  <url>
-    <loc>https://maxsal.github.io/ms/reference/phewas_analysis.html</loc>
-  </url>
-  <url>
-    <loc>https://maxsal.github.io/ms/reference/plot_phewasx.html</loc>
-  </url>
-  <url>
-    <loc>https://maxsal.github.io/ms/reference/psw.html</loc>
-  </url>
-  <url>
-    <loc>https://maxsal.github.io/ms/reference/scale_color_ms.html</loc>
-  </url>
-  <url>
-    <loc>https://maxsal.github.io/ms/reference/scale_fill_ms.html</loc>
-  </url>
-  <url>
-    <loc>https://maxsal.github.io/ms/reference/standardize_variables.html</loc>
-  </url>
-  <url>
-    <loc>https://maxsal.github.io/ms/reference/svyglm_analysis.html</loc>
-  </url>
-  <url>
-    <loc>https://maxsal.github.io/ms/reference/theme_ms.html</loc>
-  </url>
-  <url>
-    <loc>https://maxsal.github.io/ms/reference/tidy_forest.html</loc>
-  </url>
-  <url>
-    <loc>https://maxsal.github.io/ms/reference/weighted_analysis.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://maxsal.github.io/ms/404.html</loc></url>
+<url><loc>https://maxsal.github.io/ms/LICENSE-text.html</loc></url>
+<url><loc>https://maxsal.github.io/ms/LICENSE.html</loc></url>
+<url><loc>https://maxsal.github.io/ms/authors.html</loc></url>
+<url><loc>https://maxsal.github.io/ms/index.html</loc></url>
+<url><loc>https://maxsal.github.io/ms/news/index.html</loc></url>
+<url><loc>https://maxsal.github.io/ms/reference/SPAtest_analysis.html</loc></url>
+<url><loc>https://maxsal.github.io/ms/reference/brglm2_analysis.html</loc></url>
+<url><loc>https://maxsal.github.io/ms/reference/chopr.html</loc></url>
+<url><loc>https://maxsal.github.io/ms/reference/colon-equals.html</loc></url>
+<url><loc>https://maxsal.github.io/ms/reference/cooccurrence_analysis.html</loc></url>
+<url><loc>https://maxsal.github.io/ms/reference/create_formula.html</loc></url>
+<url><loc>https://maxsal.github.io/ms/reference/crossfit_lasso_weights.html</loc></url>
+<url><loc>https://maxsal.github.io/ms/reference/data0.html</loc></url>
+<url><loc>https://maxsal.github.io/ms/reference/dot-check_for_deps.html</loc></url>
+<url><loc>https://maxsal.github.io/ms/reference/dot-check_library_loaded.html</loc></url>
+<url><loc>https://maxsal.github.io/ms/reference/dot-check_package_installed.html</loc></url>
+<url><loc>https://maxsal.github.io/ms/reference/dot-correlation.html</loc></url>
+<url><loc>https://maxsal.github.io/ms/reference/dot-onAttach.html</loc></url>
+<url><loc>https://maxsal.github.io/ms/reference/dot-partial_correlation.html</loc></url>
+<url><loc>https://maxsal.github.io/ms/reference/dot-quick_cooccur_mod.html</loc></url>
+<url><loc>https://maxsal.github.io/ms/reference/dot-scale_manual.html</loc></url>
+<url><loc>https://maxsal.github.io/ms/reference/dot-weighted_partial_correlation.html</loc></url>
+<url><loc>https://maxsal.github.io/ms/reference/fcor.html</loc></url>
+<url><loc>https://maxsal.github.io/ms/reference/glm_analysis.html</loc></url>
+<url><loc>https://maxsal.github.io/ms/reference/grapes-dopar-grapes.html</loc></url>
+<url><loc>https://maxsal.github.io/ms/reference/icd10.html</loc></url>
+<url><loc>https://maxsal.github.io/ms/reference/icd10cm.html</loc></url>
+<url><loc>https://maxsal.github.io/ms/reference/icd9cm.html</loc></url>
+<url><loc>https://maxsal.github.io/ms/reference/icd_desc.html</loc></url>
+<url><loc>https://maxsal.github.io/ms/reference/index.html</loc></url>
+<url><loc>https://maxsal.github.io/ms/reference/ipw.html</loc></url>
+<url><loc>https://maxsal.github.io/ms/reference/libri.html</loc></url>
+<url><loc>https://maxsal.github.io/ms/reference/logistf_analysis.html</loc></url>
+<url><loc>https://maxsal.github.io/ms/reference/map_phewas.html</loc></url>
+<url><loc>https://maxsal.github.io/ms/reference/merge_list.html</loc></url>
+<url><loc>https://maxsal.github.io/ms/reference/pbfor.html</loc></url>
+<url><loc>https://maxsal.github.io/ms/reference/phe_desc.html</loc></url>
+<url><loc>https://maxsal.github.io/ms/reference/phecodex_icd_map.html</loc></url>
+<url><loc>https://maxsal.github.io/ms/reference/phecodex_icdcm_map.html</loc></url>
+<url><loc>https://maxsal.github.io/ms/reference/phecodex_labels.html</loc></url>
+<url><loc>https://maxsal.github.io/ms/reference/phecodex_rollup.html</loc></url>
+<url><loc>https://maxsal.github.io/ms/reference/phecodex_sex.html</loc></url>
+<url><loc>https://maxsal.github.io/ms/reference/pheinfo.html</loc></url>
+<url><loc>https://maxsal.github.io/ms/reference/pheinfox.html</loc></url>
+<url><loc>https://maxsal.github.io/ms/reference/phewas_analysis.html</loc></url>
+<url><loc>https://maxsal.github.io/ms/reference/plot_phewasx.html</loc></url>
+<url><loc>https://maxsal.github.io/ms/reference/psw.html</loc></url>
+<url><loc>https://maxsal.github.io/ms/reference/scale_color_ms.html</loc></url>
+<url><loc>https://maxsal.github.io/ms/reference/scale_fill_ms.html</loc></url>
+<url><loc>https://maxsal.github.io/ms/reference/standardize_variables.html</loc></url>
+<url><loc>https://maxsal.github.io/ms/reference/svyglm_analysis.html</loc></url>
+<url><loc>https://maxsal.github.io/ms/reference/theme_ms.html</loc></url>
+<url><loc>https://maxsal.github.io/ms/reference/tidy_forest.html</loc></url>
+<url><loc>https://maxsal.github.io/ms/reference/weighted_analysis.html</loc></url>
 </urlset>
+
