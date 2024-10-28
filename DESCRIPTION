@@ -1,7 +1,7 @@
 Package: ms
 Type: Package
 Title: Max Salvatore's Useful R Functions
-Version: 0.1.0
+Version: 1.1.0
 Author: Maxwell Salvatore
 Maintainer: Maxwell Salvatore <mmsalva@umich.edu>
 Description: Compilation of useful functions across projects.
@@ -14,18 +14,11 @@ Imports:
     scales,
     showtext,
     sysfonts,
-    collapse,
     data.table (>= 1.14.9),
-    parallel,
-    doParallel,
     foreach,
-    ppcor,
     dplyr,
     survey,
-    EValue,
-    glue,
     logistf,
-    detectseparation,
     pak,
     ggrepel,
     ggtext,
@@ -33,20 +26,8 @@ Imports:
     brglm2,
     furrr,
     future,
-    parallelly,
-    simplexreg,
-    glmnet,
-    tidyr,
-    rsample,
-    parsnip,
-    dials,
-    workflows,
-    tune,
-    yardstick,
-    vip,
-    ranger,
-    hardhat
-RoxygenNote: 7.2.3
+    simplexreg
+RoxygenNote: 7.3.2
 Depends: 
     R (>= 2.10)
 URL: https://maxsal.github.io/ms/

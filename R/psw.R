@@ -12,6 +12,7 @@
 #' @param weight_var variable name for weight
 #' @param chop logical, whether to truncate weights
 #' @importFrom cli cli_alert_info
+#' @importFrom cli cli_alert
 #' @importFrom data.table copy
 #' @importFrom data.table setnames
 #' @importFrom data.table merge.data.table
@@ -33,7 +34,7 @@ psw <- function(
     chop           = TRUE
 ) {
   if (age_bin) {
-    cli_alert("constructing categorical age variable using breaks: {age_bin_breaks}")
+    cli::cli_alert("constructing categorical age variable using breaks: {age_bin_breaks}")
     covs <- unique(c(covs, "age_bin"))
   }
   cli::cli_alert_info("estimating poststratification weights for covariates: {.field {covs}}")

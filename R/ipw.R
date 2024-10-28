@@ -10,6 +10,8 @@
 #' @param covs vector of covariates to include in model
 #' @param chop logical, whether to chop weights
 #' @importFrom data.table as.data.table
+#' @importFrom data.table is.data.table
+#' @importFrom data.table data.table
 #' @importFrom simplexreg simplexreg
 #' @return return table of id and inverse probability weights
 #' @export
@@ -30,7 +32,7 @@ ipw <- function(
     ),
     chop = TRUE
 ) {
-  if (!is.data.table(stacked_data)) {
+  if (!data.table::is.data.table(stacked_data)) {
     stacked_data <- data.table::as.data.table(stacked_data)
   }
   stacked_data[dataset == external_dataset, (weight_outcome_var) := .N * get(weight_outcome_var) /
@@ -134,7 +136,7 @@ ipw <- function(
     }
   }
 
-  data.table(
+  data.table::data.table(
     "id"        = stacked_data[dataset == dataset_name, ][[id_var]],
     "ip_weight" = external_weight
   )

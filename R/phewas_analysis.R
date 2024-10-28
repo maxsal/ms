@@ -2,6 +2,7 @@
 #' @param exposure name of exposure variable
 #' @param outcome name of outcome variable
 #' @param covariates vector of covariate names
+#' @importFrom stats as.formula
 #' @return formula for analysis
 create_formula <- function(outcome, exposure, covariates = NULL) {
   if (is.null(covariates) || length(covariates) == 0) {
@@ -10,7 +11,7 @@ create_formula <- function(outcome, exposure, covariates = NULL) {
     covariate_text <- paste(covariates, collapse = " + ")
     formula_text   <- paste(outcome, "~", exposure, "+", covariate_text)
   }
-  as.formula(formula_text)
+  stats::as.formula(formula_text)
 }
 
 
@@ -22,21 +23,25 @@ create_formula <- function(outcome, exposure, covariates = NULL) {
 #' @param weight_var name of weight variable
 #' @importFrom dplyr pull
 #' @importFrom dplyr slice
+#' @importFrom stats glm
+#' @importFrom stats binomial
+#' @importFrom stats quasibinomial
+#' @importFrom stats coef
 #' @return list of results from model for the exposure
 glm_analysis <- function(data, outcome, exposure, covariates = NULL, weight_var = NULL) {
   formula <- create_formula(outcome, exposure, covariates)
   if (!is.null(weight_var)) {
     weight_index <- data |> dplyr::pull(!!weight_var) |> (\(x) !is.na(x))() |> which()
-    fit          <- glm(formula,
+    fit          <- stats::glm(formula,
                         data = data |> dplyr::slice(weight_index),
                         weights = data |> dplyr::slice(weight_index) |> dplyr::pull(!!weight_var),
-                        family = binomial())
+                        family = stats::binomial())
     method_out <- "wglm"
   } else {
-    fit <- glm(formula, data = data, family = quasibinomial())
+    fit <- glm(formula, data = data, family = stats::quasibinomial())
     method_out <- "glm"
   }
-  beta    <- coef(fit)[exposure]
+  beta    <- stats::coef(fit)[exposure]
   se      <- summary(fit)$coefficients[exposure, "Std. Error"]
   p_value <- summary(fit)$coefficients[exposure, 4]
   return(list(phecode = exposure, beta = beta, se = se, p_value = p_value, log10p = log10(p_value), method = method_out))
@@ -53,23 +58,26 @@ glm_analysis <- function(data, outcome, exposure, covariates = NULL, weight_var 
 #' @importFrom dplyr slice
 #' @importFrom brglm2 brglm_fit
 #' @importFrom brglm2 brglm_control
+#' @importFrom stats glm
+#' @importFrom stats binomial
+#' @importFrom stats coef
 #' @return list of results from model for the exposure
 brglm2_analysis <- function(data, outcome, exposure, covariates = NULL, weight_var = NULL) {
   formula <- create_formula(outcome, exposure, covariates)
   if (!is.null(weight_var)) {
     weight_index <- data |> dplyr::pull(!!weight_var) |> (\(x) !is.na(x))() |> which()
-    fit <- glm(formula,
+    fit <- stats::glm(formula,
                data = data |> dplyr::slice(weight_index),
                weights = data |> dplyr::slice(weight_index) |> dplyr::pull(!!weight_var),
-               family = binomial(), method = brglm2::brglm_fit, type = 'AS_mean',
+               family = stats::binomial(), method = brglm2::brglm_fit, type = 'AS_mean',
                control = brglm2::brglm_control(maxit = 1000, max_step_factor = 0.5))
     method_out <- "wbrglm2"
   } else {
-    fit <- glm(formula, data = data, family = binomial(), method =  brglm2::brglm_fit, type = "AS_mean",
+    fit <- glm(formula, data = data, family = stats::binomial(), method =  brglm2::brglm_fit, type = "AS_mean",
                control = brglm2::brglm_control(maxit = 1000, max_step_factor = 0.5))
     method_out <- "brglm2"
   }
-  beta    <- coef(fit)[exposure]
+  beta    <- stats::coef(fit)[exposure]
   se      <- summary(fit)$coefficients[exposure, "Std. Error"]
   p_value <- summary(fit)$coefficients[exposure, "Pr(>|z|)"]
   return(list(phecode = exposure, beta = beta, se = se, p_value = p_value, log10p = log10(p_value), method = method_out))
@@ -87,6 +95,8 @@ brglm2_analysis <- function(data, outcome, exposure, covariates = NULL, weight_v
 #' @importFrom dplyr filter
 #' @importFrom logistf logistf
 #' @importFrom logistf logistf.control
+#' @importFrom stats coef
+#' @importFrom stats  vcov
 #' @return list of results from model for the exposure
 logistf_analysis <- function(data, outcome, exposure, covariates = NULL, logistf_pl = FALSE, weight_var = NULL) {
   formula <- create_formula(outcome, exposure, covariates)
@@ -107,8 +117,8 @@ logistf_analysis <- function(data, outcome, exposure, covariates = NULL, logistf
                        control = logistf::logistf.control(maxit = 1000, maxstep = 0.5))
     method_out <- "logistf"
   }
-  beta    <- coef(fit)[exposure]
-  se      <- sqrt(diag(vcov(fit)))[2]
+  beta    <- stats::coef(fit)[exposure]
+  se      <- sqrt(diag(stats::vcov(fit)))[2]
   p_value <- fit$prob[exposure]
   return(list(phecode = exposure, beta = beta, se = se, p_value = p_value, log10p = log10(p_value), method = method_out))
 }
@@ -119,11 +129,12 @@ logistf_analysis <- function(data, outcome, exposure, covariates = NULL, logistf
 #' @param exposure name of exposure variable
 #' @param covariates vector of covariate names
 #' @importFrom survey svyglm
+#' @importFrom stats coef
 #' @return list of results from model for the exposure
 svyglm_analysis <- function(design, outcome, exposure, covariates = NULL) {
   formula <- create_formula(outcome, exposure, covariates)
   fit     <- survey::svyglm(formula, design = design, family = "quasibinomial")
-  beta    <- coef(fit)[exposure]
+  beta    <- stats::coef(fit)[exposure]
   se      <- summary(fit)$coefficients[exposure, "Std. Error"]
   p_value <- summary(fit)$coefficients[exposure, "Pr(>|t|)"]
   return(list(phecode = exposure, beta = beta, se = se, p_value = p_value, log10p = log10(p_value), method = "svyglm"))
@@ -248,7 +259,7 @@ map_phewas <- function(
   } else {
     objects_size <- object.size(data) + object.size(design)
   }
-  
+
   if (is.null(options("future.globals.maxSize")[[1]])) {
     if (objects_size > (450*1024^2)) {
         options(future.globals.maxSize = objects_size + 50 * 1024^2)
