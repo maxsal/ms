@@ -5,6 +5,8 @@
 #' @param color_var name of column containing color values
 #' @param phe_var name of column containing phecode values
 #' @param threshold_color color of dashed line at p = 0.05
+#' @param suggestive_threshold p-value of suggestive threshold if desired; NULL otherwise
+#' @param suggestive_color color of suggestive threshold
 #' @param order_reset reset ordering of phecodes
 #' @param group_space space between groups
 #' @param label_top number of top phecodes to label
@@ -38,19 +40,21 @@
 
 plot_phewasx <- function(
     data,
-    beta_var         = "beta",
-    log10p_var       = "log10p",
-    color_var        = "color",
-    phe_var          = "exposure",
-    threshold_color  = "red",
-    order_reset      = TRUE,
-    group_space      = 20,
-    label_top        = 5,
-    title            = NULL,
-    genetic_offset   = 15,
-    color_dot_pt     = 15,
-    color_dot_symbol = "\u25CF",
-    label_size       = 3
+    beta_var             = "beta",
+    log10p_var           = "log10p",
+    color_var            = "color",
+    phe_var              = "exposure",
+    threshold_color      = "red",
+    suggestive_threshold = 0.05,
+    suggestive_color     = "orange",
+    order_reset          = TRUE,
+    group_space          = 20,
+    label_top            = 5,
+    title                = NULL,
+    genetic_offset       = 15,
+    color_dot_pt         = 15,
+    color_dot_symbol     = "\u25CF",
+    label_size           = 3
 ) {
     # initialize
     pheinfox <- data.table::copy(ms::pheinfox)
@@ -101,6 +105,9 @@ plot_phewasx <- function(
         ggplot2::ggplot(aes(x = order, y = -get(log10p_var), fill = group, color = group)) +
         ggplot2::geom_point(ggplot2::aes(shape = direction), size = 2, alpha = 0.5, show.legend = FALSE) +
         ggplot2::geom_hline(yintercept = -log10(0.05 / phewas[!is.na(get(log10p_var)), .N]), linewidth = 1, linetype = "dashed", color = threshold_color) +
+        (\() if (!is.null(suggestive_threshold))
+          ggplot2::geom_hline(yintercept = -log10(0.05), linewidth = 1, linetype = "dashed", color = suggestive_color)
+        )() +
         (\() if (!is.null(color_dot_symbol)) {
                 ggplot2::scale_x_continuous(
                     breaks = plot_data_mean[, mean],
